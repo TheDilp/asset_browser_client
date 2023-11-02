@@ -35,14 +35,6 @@ const data: {
     return null;
   })
   .flatMap((i) => (i ? [i] : []));
-
-export const getStaticPaths = (() => {
-  return [
-    {
-      params: { slug: "dnd" },
-    },
-  ];
-}) satisfies GetStaticPaths;
 ---
 
 <div>
