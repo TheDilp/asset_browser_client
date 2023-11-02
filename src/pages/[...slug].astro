@@ -168,15 +168,18 @@ export const getStaticPaths = (() => {
   );
 
   const userSelect = document.getElementById("userSelect") as HTMLSelectElement;
+  const user = localStorage.getItem("user");
+  const password = localStorage.getItem("password");
 
   userSelect?.addEventListener("change", (e) => {
+    if (user) {
+      localStorage.removeItem("password");
+    }
+
     // @ts-ignore
     localStorage.setItem("user", e.target.value);
     window.location.reload();
   });
-
-  const user = localStorage.getItem("user");
-  const password = localStorage.getItem("password");
 
   const submitPasswordBtn = document.getElementById("submitPassword") as HTMLButtonElement | null;
   if (submitPasswordBtn)
@@ -221,7 +224,6 @@ export const getStaticPaths = (() => {
     userSelect.value = user;
     const selectUserWarning = document.getElementById("selectUserWarning");
     if (selectUserWarning) selectUserWarning.style.display = "none";
-    userSelect.disabled = true;
     const rootContentCards = document.querySelectorAll(".itemLink");
     rootContentCards.forEach((card) => {
       // @ts-ignore
