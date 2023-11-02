@@ -193,20 +193,19 @@ export const getStaticPaths = (() => {
       if (password) {
         submitPasswordBtn.disabled = true;
       }
-      localStorage.setItem("password", passwordInput.value);
       window.location.reload();
-      if (user === "arctur" && password === "NewDiceLookNice20") {
-        localStorage.setItem("password", "true");
+      if (user === "arctur" && passwordInput.value === "NewDiceLookNice20") {
+        localStorage.setItem("password", passwordInput.value);
         window.location.reload();
         return;
       }
-      if (user === "david" && password === "TPKAllTheWay23") {
-        localStorage.setItem("password", "true");
+      if (user === "david" && passwordInput.value === "TPKAllTheWay23") {
+        localStorage.setItem("password", passwordInput.value);
         window.location.reload();
         return;
       }
-      if (user === "marija" && password === "ExodusIsABlobFish") {
-        localStorage.setItem("password", "true");
+      if (user === "marija" && passwordInput.value === "ExodusIsABlobFish") {
+        localStorage.setItem("password", passwordInput.value);
         window.location.reload();
         return;
       } else {
