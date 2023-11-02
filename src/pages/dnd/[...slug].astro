@@ -1,0 +1,233 @@
+---
+import { Icon } from "astro-icon";
+
+type UserType = "arctur" | "david" | "marija" | "all";
+
+const { slug } = Astro.params;
+const lastChar = slug?.slice(-1);
+
+const pageTitle = slug ? slug.split("/").at(-1) : "Foundry Asset Manager";
+const response = await fetch(
+  `${import.meta.env.PUBLIC_BASE_SERVER}/dnd/${slug || ""}${lastChar === "/" || !lastChar ? "" : "/"}`,
+);
+
+const preFormattedData: {
+  data: {
+    link: string;
+    title: string;
+    isFolder: boolean;
+    isImage: boolean;
+    isSound: boolean;
+  }[];
+} = await response.json();
+
+const data: {
+  link: string;
+  title: string;
+  isFolder: boolean;
+  isImage: boolean;
+  isSound: boolean;
+  user: "arctur" | "david" | "marija" | "all";
+}[] = preFormattedData.data
+  .map((i) => {
+    if (i.title.toLowerCase().includes("chronicles")) return { ...i, user: "arctur" as UserType };
+    if (i.title.toLowerCase().includes("wake")) return { ...i, user: "david" as UserType };
+    if (i.title.toLowerCase().includes("asaraa")) return { ...i, user: "marija" as UserType };
+    if (i.title.toLowerCase().includes("common")) return { ...i, user: "all" as UserType };
+    return null;
+  })
+  .flatMap((i) => (i ? [i] : []));
+---
+
+<div>
+  <h1 class="shadow capitalize border-b py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem]">
+    {
+      slug ? (
+        <a href={`/dnd/${slug.split("/").slice(0, -1).join("/")}`} class="mr-auto ml-4">
+          <Icon name="ph:caret-left" size={36} />
+        </a>
+      ) : (
+        <div class="w-9 mr-auto" />
+      )
+    }
+    <div class="mr-auto flex items-center md:flex-row flex-col-reverse gap-x-2">
+      <select class="text-base text-black" id="userSelect">
+        <option value="">Select user</option>
+        <option value="arctur">Arctur</option>
+        <option value="david">David</option>
+        <option value="marija">Marija</option>
+      </select>
+      <div class="flex items-center gap-x-2">
+        {pageTitle}
+        <input type="file" class="hidden" name="files" id="uploadInput" data-path={slug} />
+        {
+          slug ? (
+            <button class="w-10" id="uploadBtn">
+              <Icon name="ph:upload" />
+            </button>
+          ) : null
+        }
+      </div>
+    </div>
+  </h1>
+
+  <div class="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 p-4" id="content">
+    {
+      (data || []).map((i) => (
+        <a
+          data-user={i.user}
+          class="p-4 rounded shadow-md col-span-1 h-64 relative overflow-hidden flex flex-col gap-y-2 itemLink"
+          href={i.isFolder ? i.link : "#"}>
+          {i.isFolder ? null : (
+            <button class="w-10 absolute top-2 right-0 transition-colors hover:text-red-500 deleteItemButton" id={i.link}>
+              <Icon name="ph:trash" size={24} />
+            </button>
+          )}
+          <h2 class="text-2xl group line-clamp-2 min-h-[2rem] max-w-full text-center mt-4 font-bold capitalize">{i.title}</h2>
+          <div class="flex items-center justify-center">
+            {i.isImage ? <img src={i.link} alt={i.title} class="object-contain" /> : null}
+            {i.isSound ? (
+              <audio controls>
+                <source src={i.link} />
+              </audio>
+            ) : null}
+          </div>
+        </a>
+      ))
+    }
+  </div>
+  <div class="text-6xl font-bold mt-4 text-center" id="selectUserWarning">Select a user</div>
+  <div class="flex w-full gap-x-2 justify-center items-center mt-4" id="selectUserPassword">
+    <input
+      placeholder="Enter the provided password"
+      class="w-64 placeholder:text-center border rounded-md py-1 px-4"
+      type="password"
+      id="passwordInput"
+    />
+    <button
+      id="submitPassword"
+      class="border rounded bg-blue-600 shadow active:shadow-none active:bg-blue-300 text-white py-1 px-4">Login</button
+    >
+  </div>
+</div>
+
+<script>
+  document.title = "Foundry Asset Browser";
+  const uploadBtn = document.getElementById("uploadBtn");
+  const uploadInput = document.getElementById("uploadInput") as HTMLInputElement;
+  uploadBtn?.addEventListener("click", () => {
+    if (uploadInput) uploadInput.click();
+  });
+  if (uploadInput)
+    uploadInput.addEventListener("change", async (e) => {
+      //   @ts-ignore
+      const files = e.target.files;
+      const data = new FormData();
+      data.append("file", files[0]);
+      data.append("path", `dnd/${uploadInput.dataset.path}/${files[0].name}`);
+      try {
+        await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/upload`, {
+          method: "POST",
+          body: data,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            ...(typeof data === "string" ? { "Content-Type": "application/json" } : {}),
+          },
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+  const deleteItemBtns = document.querySelectorAll(".deleteItemButton");
+
+  deleteItemBtns.forEach((btn) =>
+    btn.addEventListener("click", async (e) => {
+      const accept = confirm("Are you sure you want to delete this item?");
+      if (accept) {
+        // @ts-ignore
+        const key = e.currentTarget.id;
+        await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/delete`, {
+          method: "DELETE",
+          body: JSON.stringify({ key }),
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        });
+        window.location.reload();
+      }
+    }),
+  );
+
+  const userSelect = document.getElementById("userSelect") as HTMLSelectElement;
+
+  userSelect?.addEventListener("change", (e) => {
+    // @ts-ignore
+    localStorage.setItem("user", e.target.value);
+    window.location.reload();
+  });
+
+  const user = localStorage.getItem("user");
+  const password = localStorage.getItem("password");
+
+  const submitPasswordBtn = document.getElementById("submitPassword") as HTMLButtonElement | null;
+  if (submitPasswordBtn)
+    submitPasswordBtn.addEventListener("click", () => {
+      if (!user) {
+        alert("Please select a user.");
+        return;
+      }
+      const passwordInput = document.getElementById("passwordInput") as HTMLInputElement;
+      if (passwordInput && !passwordInput.value) {
+        alert("Please enter a password.");
+        return;
+      }
+      if (password) {
+        submitPasswordBtn.disabled = true;
+      }
+      localStorage.setItem("password", passwordInput.value);
+      window.location.reload();
+      if (user === "arctur" && password === "NewDiceLookNice20") {
+        localStorage.setItem("password", "true");
+        window.location.reload();
+        return;
+      }
+      if (user === "david" && password === "TPKAllTheWay23") {
+        localStorage.setItem("password", "true");
+        window.location.reload();
+        return;
+      }
+      if (user === "marija" && password === "ExodusIsABlobFish") {
+        localStorage.setItem("password", "true");
+        window.location.reload();
+        return;
+      } else {
+        alert("Incorrect password!");
+      }
+    });
+
+  if (!user || !password) {
+    const content = document.getElementById("content");
+    if (content) content.style.display = "none";
+  }
+  if (user) {
+    userSelect.value = user;
+    const selectUserWarning = document.getElementById("selectUserWarning");
+    if (selectUserWarning) selectUserWarning.style.display = "none";
+    userSelect.disabled = true;
+    const rootContentCards = document.querySelectorAll(".itemLink");
+    rootContentCards.forEach((card) => {
+      // @ts-ignore
+      if (card.dataset.user) {
+        // @ts-ignore
+        if (card.dataset.user !== user) card.classList.add("hidden");
+      }
+    });
+  }
+  if ((user && password) || !user) {
+    const selectUserPassword = document.getElementById("selectUserPassword");
+    if (selectUserPassword) selectUserPassword.style.display = "none";
+  }
+</script>
