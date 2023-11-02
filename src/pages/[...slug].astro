@@ -1,5 +1,4 @@
 ---
-import type { GetStaticPaths } from "astro";
 import { Icon } from "astro-icon";
 
 type UserType = "arctur" | "david" | "marija" | "all";
@@ -9,6 +8,7 @@ const lastChar = slug?.slice(-1);
 
 const pageTitle = slug ? slug.split("/").at(-1) : "Foundry Asset Manager";
 const response = await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/${slug || ""}${lastChar === "/" || !lastChar ? "" : "/"}`);
+console.log(response);
 const preFormattedData: {
   data: {
     link: string;
@@ -28,11 +28,13 @@ const data: {
   user: "arctur" | "david" | "marija" | "all";
 }[] = preFormattedData.data
   .map((i) => {
-    if (i.title.toLowerCase().includes("chronicles")) return { ...i, user: "arctur" as UserType };
-    if (i.title.toLowerCase().includes("wake")) return { ...i, user: "david" as UserType };
-    if (i.title.toLowerCase().includes("asaraa")) return { ...i, user: "marija" as UserType };
-    if (i.title.toLowerCase().includes("common")) return { ...i, user: "all" as UserType };
-    return null;
+    if (slug === "dnd") {
+      if (i.title.toLowerCase().includes("chronicles")) return { ...i, user: "arctur" as UserType };
+      if (i.title.toLowerCase().includes("wake")) return { ...i, user: "david" as UserType };
+      if (i.title.toLowerCase().includes("asaraa")) return { ...i, user: "marija" as UserType };
+      if (i.title.toLowerCase().includes("common")) return { ...i, user: "all" as UserType };
+    }
+    return { ...i, user: "all" as UserType };
   })
   .flatMap((i) => (i ? [i] : []));
 ---
@@ -40,8 +42,8 @@ const data: {
 <div>
   <h1 class="shadow capitalize border-b py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem]">
     {
-      slug ? (
-        <a href={`/dnd/${slug.split("/").slice(0, -1).join("/")}`} class="mr-auto ml-4">
+      slug !== "dnd" ? (
+        <a href={`/${slug?.split("/").slice(0, -1).join("/")}`} class="mr-auto ml-4">
           <Icon name="ph:caret-left" size={36} />
         </a>
       ) : (
@@ -73,7 +75,7 @@ const data: {
     {
       (data || []).map((i) => (
         <a
-          data-user={i.user}
+          data-user={slug === "dnd" ? i.user : "all"}
           class="p-4 rounded shadow-md col-span-1 h-64 relative overflow-hidden flex flex-col gap-y-2 itemLink"
           href={i.isFolder ? i.link : "#"}>
           {i.isFolder ? null : (
@@ -82,8 +84,8 @@ const data: {
             </button>
           )}
           <h2 class="text-2xl group line-clamp-2 min-h-[2rem] max-w-full text-center mt-4 font-bold capitalize">{i.title}</h2>
-          <div class="flex items-center justify-center">
-            {i.isImage ? <img src={i.link} alt={i.title} class="object-contain" /> : null}
+          <div class="flex justify-center max-w-full">
+            {i.isImage ? <img src={i.link} alt={i.title} class="object-cover h-48" /> : null}
             {i.isSound ? (
               <audio controls>
                 <source src={i.link} />
@@ -94,8 +96,8 @@ const data: {
       ))
     }
   </div>
-  <div class="text-6xl font-bold mt-4 text-center" id="selectUserWarning">Select a user</div>
-  <div class="flex w-full gap-x-2 justify-center items-center mt-4" id="selectUserPassword">
+  <div class="text-6xl font-bold mt-4 text-center hidden" id="selectUserWarning">Select a user</div>
+  <div class="w-full gap-x-2 justify-center items-center mt-4 hidden" id="selectUserPassword">
     <input
       placeholder="Enter the provided password"
       class="w-64 placeholder:text-center border rounded-md py-1 px-4"
@@ -111,6 +113,15 @@ const data: {
 
 <script>
   document.title = "Foundry Asset Browser";
+
+  document.querySelectorAll("audio").forEach((aud) =>
+    aud.addEventListener("play", (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+    }),
+  );
+
   const uploadBtn = document.getElementById("uploadBtn");
   const uploadInput = document.getElementById("uploadInput") as HTMLInputElement;
   uploadBtn?.addEventListener("click", () => {
@@ -162,6 +173,42 @@ const data: {
   const userSelect = document.getElementById("userSelect") as HTMLSelectElement;
   const user = localStorage.getItem("user");
   const password = localStorage.getItem("password");
+  const selectUserWarning = document.getElementById("selectUserWarning");
+  const selectUserPassword = document.getElementById("selectUserPassword");
+  const passwordInput = document.getElementById("passwordInput") as HTMLInputElement;
+  const submitPasswordBtn = document.getElementById("submitPassword") as HTMLButtonElement | null;
+
+  function passwordEnter() {
+    if (!user) {
+      alert("Please select a user.");
+      return;
+    }
+    if (passwordInput && !passwordInput.value) {
+      alert("Please enter a password.");
+      return;
+    }
+    if (password && submitPasswordBtn) {
+      submitPasswordBtn.disabled = true;
+    }
+    window.location.reload();
+    if (user === "arctur" && passwordInput.value === "NewDiceLookNice20") {
+      localStorage.setItem("password", passwordInput.value);
+      window.location.reload();
+      return;
+    }
+    if (user === "david" && passwordInput.value === "TPKAllTheWay23") {
+      localStorage.setItem("password", passwordInput.value);
+      window.location.reload();
+      return;
+    }
+    if (user === "marija" && passwordInput.value === "ExodusIsABlobFish") {
+      localStorage.setItem("password", passwordInput.value);
+      window.location.reload();
+      return;
+    } else {
+      alert("Incorrect password!");
+    }
+  }
 
   userSelect?.addEventListener("change", (e) => {
     if (user) {
@@ -170,63 +217,42 @@ const data: {
 
     // @ts-ignore
     localStorage.setItem("user", e.target.value);
-    window.location.reload();
+    window.location.assign("/");
   });
 
-  const submitPasswordBtn = document.getElementById("submitPassword") as HTMLButtonElement | null;
-  if (submitPasswordBtn)
-    submitPasswordBtn.addEventListener("click", () => {
-      if (!user) {
-        alert("Please select a user.");
-        return;
-      }
-      const passwordInput = document.getElementById("passwordInput") as HTMLInputElement;
-      if (passwordInput && !passwordInput.value) {
-        alert("Please enter a password.");
-        return;
-      }
-      if (password) {
-        submitPasswordBtn.disabled = true;
-      }
-      window.location.reload();
-      if (user === "arctur" && passwordInput.value === "NewDiceLookNice20") {
-        localStorage.setItem("password", passwordInput.value);
-        window.location.reload();
-        return;
-      }
-      if (user === "david" && passwordInput.value === "TPKAllTheWay23") {
-        localStorage.setItem("password", passwordInput.value);
-        window.location.reload();
-        return;
-      }
-      if (user === "marija" && passwordInput.value === "ExodusIsABlobFish") {
-        localStorage.setItem("password", passwordInput.value);
-        window.location.reload();
-        return;
-      } else {
-        alert("Incorrect password!");
-      }
-    });
+  if (submitPasswordBtn) submitPasswordBtn.addEventListener("click", passwordEnter);
+
+  passwordInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      passwordEnter();
+    }
+  });
 
   if (!user || !password) {
     const content = document.getElementById("content");
     if (content) content.style.display = "none";
+
+    if (!user) {
+      selectUserWarning?.classList.remove("hidden");
+    }
+    if (!password) {
+      selectUserPassword?.classList.remove("hidden");
+      selectUserPassword?.classList.add("flex");
+    }
   }
   if (user) {
     userSelect.value = user;
-    const selectUserWarning = document.getElementById("selectUserWarning");
     if (selectUserWarning) selectUserWarning.style.display = "none";
     const rootContentCards = document.querySelectorAll(".itemLink");
     rootContentCards.forEach((card) => {
       // @ts-ignore
       if (card.dataset.user) {
         // @ts-ignore
-        if (card.dataset.user !== user) card.classList.add("hidden");
+        if (card.dataset.user !== user && card.dataset.user !== "all") card.classList.add("hidden");
       }
     });
   }
   if ((user && password) || !user) {
-    const selectUserPassword = document.getElementById("selectUserPassword");
     if (selectUserPassword) selectUserPassword.style.display = "none";
   }
 </script>
