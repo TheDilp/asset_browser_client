@@ -40,11 +40,7 @@ const data: {
   .flatMap((i) => (i ? [i] : []));
 
 export const getStaticPaths = (() => {
-  return data.map((i) => ({
-    params: {
-      slug: i.link,
-    },
-  }));
+  return [{ params: { slug: "/dnd/" } }];
 }) satisfies GetStaticPaths;
 ---
 
