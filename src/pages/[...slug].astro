@@ -8,7 +8,6 @@ const lastChar = slug?.slice(-1);
 
 const pageTitle = slug ? slug.split("/").at(-1) : "Foundry Asset Manager";
 const response = await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/${slug || ""}${lastChar === "/" || !lastChar ? "" : "/"}`);
-console.log(response);
 const preFormattedData: {
   data: {
     link: string;
@@ -133,7 +132,7 @@ const data: {
       const files = e.target.files;
       const data = new FormData();
       data.append("file", files[0]);
-      data.append("path", `dnd/${uploadInput.dataset.path}/${files[0].name}`);
+      data.append("path", `/dnd/${uploadInput.dataset.path}/${files[0].name}`);
       try {
         await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/upload`, {
           method: "POST",
