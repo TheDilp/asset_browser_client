@@ -8,9 +8,7 @@ const { slug } = Astro.params;
 const lastChar = slug?.slice(-1);
 
 const pageTitle = slug ? slug.split("/").at(-1) : "Foundry Asset Manager";
-const response = await fetch(
-  `${import.meta.env.PUBLIC_BASE_SERVER}/dnd/${slug || ""}${lastChar === "/" || !lastChar ? "" : "/"}`,
-);
+const response = await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}${slug || ""}${lastChar === "/" || !lastChar ? "" : "/"}`);
 
 const preFormattedData: {
   data: {
