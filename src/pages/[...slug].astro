@@ -17,6 +17,7 @@ const preFormattedData: {
     isSound: boolean;
   }[];
 } = await response.json();
+console.log(slug);
 
 const data: {
   link: string;
@@ -60,7 +61,7 @@ const data: {
         {pageTitle}
         <input type="file" class="hidden" name="files" id="uploadInput" data-path={slug} />
         {
-          slug ? (
+          slug !== "dnd" ? (
             <button class="w-10" id="uploadBtn">
               <Icon name="ph:upload" />
             </button>
@@ -132,7 +133,7 @@ const data: {
       const files = e.target.files;
       const data = new FormData();
       data.append("file", files[0]);
-      data.append("path", `/dnd/${uploadInput.dataset.path}/${files[0].name}`);
+      data.append("path", `${uploadInput.dataset.path}/${files[0].name}`);
       try {
         await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/upload`, {
           method: "POST",
