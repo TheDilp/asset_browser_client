@@ -112,6 +112,7 @@ const data: {
 
 <script>
   document.title = "Foundry Asset Browser";
+  const user = localStorage.getItem("user");
 
   document.querySelectorAll("audio").forEach((aud) =>
     aud.addEventListener("play", (e) => {
@@ -124,12 +125,23 @@ const data: {
   const uploadBtn = document.getElementById("uploadBtn");
   const uploadInput = document.getElementById("uploadInput") as HTMLInputElement;
   const userSelect = document.getElementById("userSelect") as HTMLSelectElement;
-  const user = localStorage.getItem("user");
   const password = localStorage.getItem("password");
   const selectUserWarning = document.getElementById("selectUserWarning");
   const selectUserPassword = document.getElementById("selectUserPassword");
   const passwordInput = document.getElementById("passwordInput") as HTMLInputElement;
   const submitPasswordBtn = document.getElementById("submitPassword") as HTMLButtonElement | null;
+
+  if (uploadInput.dataset.path !== "dnd" && uploadInput.dataset.path !== "dnd/") {
+    if (uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") && user !== "arctur") {
+      window.location.replace("/dnd");
+    }
+    if (uploadInput.dataset.path?.startsWith("dnd/dark-wake") && user !== "david") {
+      window.location.replace("/dnd");
+    }
+    if (uploadInput.dataset.path?.startsWith("dnd/asaraa") && user !== "marija") {
+      window.location.replace("/dnd");
+    }
+  }
 
   uploadBtn?.addEventListener("click", () => {
     if (uploadInput) uploadInput.click();
