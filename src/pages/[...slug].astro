@@ -234,10 +234,7 @@ const data: {
         btn.classList.add("hidden", "pointer-events-none");
         return;
       }
-      if (uploadInput.dataset.path?.startsWith("dnd/common")) {
-        btn.classList.add("hidden", "pointer-events-none");
-        return;
-      }
+
       btn.addEventListener("click", async () => {
         // @ts-ignore
         const link = btn.dataset.link;
