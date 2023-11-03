@@ -7,16 +7,19 @@ const { slug } = Astro.params;
 const lastChar = slug?.slice(-1);
 
 const pageTitle = slug ? slug.split("/").at(-1) : "Foundry Asset Manager";
-const response = await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/${slug || ""}${lastChar === "/" || !lastChar ? "" : "/"}`);
+const response = await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/${slug || ""}${lastChar === "/" || !lastChar ? "" : "/"}`, {
+  method: "GET",
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+  },
+});
 const preFormattedData: {
-  data: {
-    link: string;
-    title: string;
-    isFolder: boolean;
-    isImage: boolean;
-    isSound: boolean;
-  }[];
-} = await response.json();
+  link: string;
+  title: string;
+  isFolder: boolean;
+  isImage: boolean;
+  isSound: boolean;
+}[] = await response.json();
 
 const data: {
   link: string;
@@ -25,8 +28,8 @@ const data: {
   isImage: boolean;
   isSound: boolean;
   user: "arctur" | "david" | "marija" | "all";
-}[] = preFormattedData.data
-  .map((i) => {
+}[] = preFormattedData
+  ?.map((i) => {
     if (slug === "dnd") {
       if (i.title.toLowerCase().includes("chronicles")) return { ...i, user: "arctur" as UserType };
       if (i.title.toLowerCase().includes("wake")) return { ...i, user: "david" as UserType };
