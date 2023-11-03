@@ -235,7 +235,8 @@ const data: {
         return;
       }
 
-      btn.addEventListener("click", async () => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
         // @ts-ignore
         const link = btn.dataset.link;
 
