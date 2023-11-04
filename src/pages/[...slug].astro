@@ -82,7 +82,8 @@ const data: {
       (data || []).map((i) => (
         <a
           data-user={slug === "dnd" ? i.user : "all"}
-          class=" rounded shadow-md col-span-1 group h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink"
+          data-image={i.isImage ? i.link : ""}
+          class="rounded shadow-md col-span-1 group h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink"
           href={i.isFolder ? i.link : "#"}>
           <div class="h-6 flex items-center max-h-8 justify-end gap-x-4 z-10 p-4">
             {!i.isFolder && (i.isImage || i.isSound) ? (
@@ -148,6 +149,17 @@ const data: {
       class="border rounded bg-blue-600 shadow active:shadow-none active:bg-blue-300 text-white py-1 px-4">Login</button
     >
   </div>
+  <div class="w-screen h-screen absolute top-0 items-center justify-center z-20 overflow-hidden hidden" id="modal">
+    <div class="bg-black opacity-75 w-full h-full absolute z-10" id="modalOverlay"></div>
+    <div class="absolute top-0 right-0 z-20 text-white">
+      <button id="modalCloseBtn">
+        <Icon name="ph:x" size={48} />
+      </button>
+    </div>
+    <div class="z-20 h-fit max-h-full w-fit max-w-full">
+      <img id="modalImage" class="object-contain max-w-full w-full h-full max-h-full" src="" />
+    </div>
+  </div>
 </div>
 
 <script>
@@ -170,7 +182,10 @@ const data: {
   const selectUserPassword = document.getElementById("selectUserPassword");
   const passwordInput = document.getElementById("passwordInput") as HTMLInputElement;
   const submitPasswordBtn = document.getElementById("submitPassword") as HTMLButtonElement | null;
-
+  const modal = document.getElementById("modal");
+  const modalImage = document.getElementById("modalImage") as HTMLImageElement;
+  const modalCloseButton = document.getElementById("modalCloseBtn");
+  const modalOverlay = document.getElementById("modalOverlay");
   if (uploadInput.dataset.path !== "dnd" && uploadInput.dataset.path !== "dnd/") {
     if (uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") && user !== "arctur") {
       window.location.replace("/dnd");
@@ -180,6 +195,20 @@ const data: {
     }
     if (uploadInput.dataset.path?.startsWith("dnd/asaraa") && user !== "marija") {
       window.location.replace("/dnd");
+    }
+  }
+  if (modal) {
+    if (modalCloseButton) {
+      modalCloseButton.addEventListener("click", () => {
+        modal.classList.add("hidden");
+        modalImage.src = "";
+      });
+    }
+    if (modalOverlay) {
+      modalOverlay.addEventListener("click", () => {
+        modal.classList.add("hidden");
+        modalImage.src = "";
+      });
     }
   }
 
@@ -353,6 +382,16 @@ const data: {
       if (card.dataset.user) {
         // @ts-ignore
         if (card.dataset.user !== user && card.dataset.user !== "all") card.classList.add("hidden");
+      }
+      // @ts-ignore
+      if (card.dataset.image) {
+        // @ts-ignore
+        card.addEventListener("click", () => {
+          // @ts-ignore
+          modalImage.src = card.dataset.image;
+          modal?.classList.add("flex");
+          modal?.classList.remove("hidden");
+        });
       }
     });
   }
