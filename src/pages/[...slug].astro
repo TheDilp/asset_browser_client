@@ -43,7 +43,7 @@ const data: {
   .flatMap((i) => (i ? [i] : []));
 ---
 
-<div>
+<div class={true ? "bg-zinc-900 text-white h-screen" : "bg-white h-screen"}>
   <h1 class="shadow capitalize border-b py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem]">
     <div class="flex items-center w-full gap-x-2">
       {
@@ -77,13 +77,15 @@ const data: {
     <input type="file" class="hidden" name="files" id="uploadInput" data-path={slug} />
   </h1>
 
-  <div class="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 p-4" id="content">
+  <div class={`grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 p-4 ${true ? "bg-zinc-900" : "bg-white"}`} id="content">
     {
       (data || []).map((i) => (
         <a
           data-user={slug === "dnd" ? i.user : "all"}
           data-image={i.isImage ? i.link : ""}
-          class="rounded shadow-md col-span-1 group h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink"
+          class={`rounded shadow-md col-span-1 group h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink ${
+            true ? "text-white" : "text-black"
+          }`}
           href={i.isFolder ? i.link : "#"}>
           <div class="h-6 flex items-center max-h-8 justify-end gap-x-4 z-10 p-4">
             {!i.isFolder && (i.isImage || i.isSound) ? (
@@ -107,7 +109,9 @@ const data: {
           <h2
             class={`text-2xl group line-clamp-2 z-10 min-h-[2rem] max-w-full text-center mt-4 font-bold capitalize ${
               i.isImage ? "text-white opacity-0 group-hover:opacity-100 transition-opacity" : "text-black"
-            }`}>
+            }
+            ${true ? "text-white" : "text-black"}
+            `}>
             {i.title}
           </h2>
           <div class="flex items-center justify-center max-w-full">
@@ -124,7 +128,7 @@ const data: {
             ) : null}
           </div>
           <div
-            class="absolute rounded z-0 flex h-full w-full flex-col items-center justify-end bg-center transition-all group-hover:brightness-75"
+            class="absolute rounded z-0 flex h-full w-full flex-col items-center justify-end bg-center transition-all group-hover:brightness-75  pointer-events-none"
             style={{
               backgroundImage: i.isImage ? `url(${i.link.replaceAll(" ", "%20")})` : "",
               backgroundPosition: "center",
@@ -384,7 +388,7 @@ const data: {
         if (card.dataset.user !== user && card.dataset.user !== "all") card.classList.add("hidden");
       }
       // @ts-ignore
-      if (card.dataset.image) {
+      if (card.dataset.image && card.dataset.image !== "") {
         // @ts-ignore
         card.addEventListener("click", () => {
           // @ts-ignore
