@@ -55,17 +55,19 @@ const data: {
           <div class="w-9 mr-auto" />
         )
       }
-      <span class="flex-1 flex justify-center">
-        {pageTitle}
+      <span class="flex-1 flex justify-center gap-x-2">
+        <span>
+          {pageTitle}
+        </span>
         {
           slug !== "dnd" ? (
-            <button class="w-10" id="uploadBtn">
+            <button class="w-10 hover:text-blue-400 transition-colors active:text-blue-200" id="uploadBtn">
               <Icon name="ph:upload" />
             </button>
           ) : null
         }
       </span>
-      <select class="text-base text-black" id="userSelect">
+      <select class="text-base text-black mr-4" id="userSelect">
         <option value="">Select user</option>
         <option value="arctur">Arctur</option>
         <option value="david">David</option>
