@@ -43,125 +43,134 @@ const data: {
   .flatMap((i) => (i ? [i] : []));
 ---
 
-<div class={true ? "bg-zinc-900 text-white h-screen" : "bg-white h-screen"}>
-  <h1 class="shadow capitalize border-b py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem]">
-    <div class="flex items-center w-full gap-x-2">
-      {
-        slug !== "dnd" ? (
-          <a href={`/${slug?.split("/").slice(0, -1).join("/")}`} class="mr-auto ml-4">
-            <Icon name="ph:caret-left" size={36} />
-          </a>
-        ) : (
-          <div class="w-9 mr-auto" />
-        )
-      }
-      <span class="flex-1 flex justify-center gap-x-2">
-        <span>
-          {pageTitle}
-        </span>
+<div class="dark" id="darkmodeContainer">
+  <div class="min-h-screen h-screen w-screen dark:bg-zinc-900 bg-white" id="container">
+    <h1
+      class="shadow capitalize border-b py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem] dark:bg-zinc-900 dark:text-white">
+      <div class="flex items-center w-full gap-x-2">
         {
           slug !== "dnd" ? (
-            <button class="w-10 hover:text-blue-400 transition-colors active:text-blue-200" id="uploadBtn">
-              <Icon name="ph:upload" />
-            </button>
-          ) : null
+            <a href={`/${slug?.split("/").slice(0, -1).join("/")}`} class="mr-auto ml-4">
+              <Icon name="ph:caret-left" size={36} />
+            </a>
+          ) : (
+            <div class="w-9 mr-auto" />
+          )
         }
-      </span>
-      <select class="text-base text-black mr-4" id="userSelect">
-        <option value="">Select user</option>
-        <option value="arctur">Arctur</option>
-        <option value="david">David</option>
-        <option value="marija">Marija</option>
-      </select>
-    </div>
-    <input type="file" class="hidden" name="files" id="uploadInput" data-path={slug} />
-  </h1>
-
-  <div class={`grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 p-4 ${true ? "bg-zinc-900" : "bg-white"}`} id="content">
-    {
-      (data || []).map((i) => (
-        <a
-          data-user={slug === "dnd" ? i.user : "all"}
-          data-image={i.isImage ? i.link : ""}
-          class={`rounded shadow-md col-span-1 group h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink ${
-            true ? "text-white" : "text-black"
-          }`}
-          href={i.isFolder ? i.link : "#"}>
-          <div class="h-6 flex items-center max-h-8 justify-end gap-x-4 z-10 p-4">
-            {!i.isFolder && (i.isImage || i.isSound) ? (
-              <button
-                class={`w-fit transition-colors  active:text-zinc-300 copyItemButton ${
-                  i.isImage ? "text-white hover:text-zinc-200" : "text-zinc-400 hover:text-black"
-                }`}
-                data-link={i.link}>
-                <Icon name="ph:copy" size={24} />
+        <span class="flex-1 flex justify-center gap-x-2">
+          <span>
+            {pageTitle}
+          </span>
+          {
+            slug !== "dnd" ? (
+              <button class="w-10 hover:text-blue-400 transition-colors active:text-blue-200" id="uploadBtn">
+                <Icon name="ph:upload" />
               </button>
-            ) : null}
-            {(i.isFolder && !i.isImage && !i.isSound) || slug?.startsWith("dnd/common") ? null : (
-              <button
-                class={`w-fit transition-colors active:text-red-200 copyItemButton text-white hover:text-red-500 deleteItemButton`}
-                id={i.link}>
-                <Icon name="ph:trash" size={24} />
-              </button>
-            )}
+            ) : null
+          }
+        </span>
+        <button id="darkModeBtn">
+          <div class="h-8 w-8" id="sunIcon">
+            <Icon name="ph:sun" />
           </div>
+          <div class="h-8 w-8 hidden" id="moonIcon">
+            <Icon name="ph:moon" />
+          </div>
+        </button>
+        <select class="text-base text-black mr-4 p-1 rounded dark:text-white dark:bg-zinc-800" id="userSelect">
+          <option value="">Select user</option>
+          <option value="arctur">Arctur</option>
+          <option value="david">David</option>
+          <option value="marija">Marija</option>
+        </select>
+      </div>
+      <input type="file" class="hidden" name="files" id="uploadInput" data-path={slug} />
+    </h1>
 
-          <h2
-            class={`text-2xl group line-clamp-2 z-10 min-h-[2rem] max-w-full text-center mt-4 font-bold capitalize ${
-              i.isImage ? "text-white opacity-0 group-hover:opacity-100 transition-opacity" : "text-black"
-            }
-            ${true ? "text-white" : "text-black"}
+    <div class={`grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 p-4`} id="content">
+      {
+        (data || []).map((i) => (
+          <a
+            data-user={slug === "dnd" ? i.user : "all"}
+            data-image={i.isImage ? i.link : ""}
+            class={`rounded shadow-md col-span-1 group h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink dark:text-white dark:bg-zinc-800`}
+            href={i.isFolder ? i.link : "#"}>
+            <div class="h-6 flex items-center max-h-8 justify-end gap-x-4 z-10 p-4">
+              {!i.isFolder && (i.isImage || i.isSound) ? (
+                <button
+                  class={`w-fit transition-colors active:text-zinc-300 copyItemButton ${
+                    i.isImage
+                      ? "text-black hover:text-zinc-200 dark:text-white"
+                      : "hover:text-zinc-800 dark:hover:text-zinc-400 dark:text-white"
+                  }`}
+                  data-link={i.link}>
+                  <Icon name="ph:copy" size={24} />
+                </button>
+              ) : null}
+              {(i.isFolder && !i.isImage && !i.isSound) || slug?.startsWith("dnd/common") ? null : (
+                <button
+                  class={`w-fit transition-colors active:text-red-200 copyItemButton dark:text-white hover:text-red-500 deleteItemButton`}
+                  id={i.link}>
+                  <Icon name="ph:trash" size={24} />
+                </button>
+              )}
+            </div>
+            <h2
+              class={`text-2xl group truncate px-4 z-10 min-h-[2rem] dark:text-white max-w-full text-center mt-4 font-bold capitalize itemTitle ${
+                i.isImage ? "text-white opacity-0 group-hover:opacity-100 transition-opacity" : "text-black"
+              }
             `}>
-            {i.title}
-          </h2>
-          <div class="flex items-center justify-center max-w-full">
-            {i.isFolder ? (
-              <div class="w-36">
-                <Icon name="ph:folder" />
-              </div>
-            ) : null}
+              {i.title}
+            </h2>
+            <div class="flex items-center justify-center max-w-full">
+              {i.isFolder ? (
+                <div class="w-36">
+                  <Icon name="ph:folder" />
+                </div>
+              ) : null}
 
-            {i.isSound ? (
-              <audio controls>
-                <source src={i.link} />
-              </audio>
-            ) : null}
-          </div>
-          <div
-            class="absolute rounded z-0 flex h-full w-full flex-col items-center justify-end bg-center transition-all group-hover:brightness-75  pointer-events-none"
-            style={{
-              backgroundImage: i.isImage ? `url(${i.link.replaceAll(" ", "%20")})` : "",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-            }}
-          />
-        </a>
-      ))
-    }
-  </div>
-  <div class="text-6xl font-bold mt-4 text-center hidden" id="selectUserWarning">Select a user</div>
-  <div class="w-full gap-x-2 justify-center items-center mt-4 hidden" id="selectUserPassword">
-    <input
-      placeholder="Enter the provided password"
-      class="w-64 placeholder:text-center border rounded-md py-1 px-4"
-      type="password"
-      id="passwordInput"
-    />
-    <button
-      id="submitPassword"
-      class="border rounded bg-blue-600 shadow active:shadow-none active:bg-blue-300 text-white py-1 px-4">Login</button
-    >
-  </div>
-  <div class="w-screen h-screen absolute top-0 items-center justify-center z-20 overflow-hidden hidden" id="modal">
-    <div class="bg-black opacity-75 w-full h-full absolute z-10" id="modalOverlay"></div>
-    <div class="absolute top-0 right-0 z-20 text-white">
-      <button id="modalCloseBtn">
-        <Icon name="ph:x" size={48} />
-      </button>
+              {i.isSound ? (
+                <audio class="mt-4" controls>
+                  <source src={i.link} />
+                </audio>
+              ) : null}
+            </div>
+            <div
+              class="absolute rounded z-0 flex h-full w-full flex-col items-center justify-end bg-center transition-all group-hover:brightness-75  pointer-events-none"
+              style={{
+                backgroundImage: i.isImage ? `url(${i.link.replaceAll(" ", "%20")})` : "",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+              }}
+            />
+          </a>
+        ))
+      }
     </div>
-    <div class="z-20 h-fit max-h-full w-fit max-w-full">
-      <img id="modalImage" class="object-contain max-w-full w-full h-full max-h-full" src="" />
+    <div class="text-6xl font-bold mt-4 text-center hidden" id="selectUserWarning">Select a user</div>
+    <div class="w-full gap-x-2 justify-center items-center mt-4 hidden" id="selectUserPassword">
+      <input
+        placeholder="Enter the provided password"
+        class="w-64 placeholder:text-center border rounded-md py-1 px-4"
+        type="password"
+        id="passwordInput"
+      />
+      <button
+        id="submitPassword"
+        class="border rounded bg-blue-600 shadow active:shadow-none active:bg-blue-300 text-white py-1 px-4">Login</button
+      >
+    </div>
+    <div class="w-screen h-screen absolute top-0 items-center justify-center z-20 overflow-hidden hidden" id="modal">
+      <div class="bg-black opacity-75 w-full h-full absolute z-10" id="modalOverlay"></div>
+      <div class="absolute top-0 right-0 z-20 text-white">
+        <button id="modalCloseBtn">
+          <Icon name="ph:x" size={48} />
+        </button>
+      </div>
+      <div class="z-20 h-fit max-h-full w-fit max-w-full">
+        <img id="modalImage" class="object-contain max-w-full w-full h-full max-h-full" src="" />
+      </div>
     </div>
   </div>
 </div>
@@ -169,10 +178,10 @@ const data: {
 <script>
   document.title = "Foundry Asset Browser";
   const user = localStorage.getItem("user");
+  const darkMode = localStorage.getItem("darkMode");
 
   document.querySelectorAll("audio").forEach((aud) =>
     aud.addEventListener("play", (e) => {
-      e.preventDefault();
       e.stopImmediatePropagation();
       e.stopPropagation();
     }),
@@ -190,6 +199,24 @@ const data: {
   const modalImage = document.getElementById("modalImage") as HTMLImageElement;
   const modalCloseButton = document.getElementById("modalCloseBtn");
   const modalOverlay = document.getElementById("modalOverlay");
+  const darkmodeContainer = document.getElementById("darkmodeContainer");
+  const content = document.getElementById("content");
+  const darkModeBtn = document.getElementById("darkModeBtn") as HTMLButtonElement;
+  const moonIcon = document.getElementById("moonIcon");
+  const sunIcon = document.getElementById("sunIcon");
+
+  darkModeBtn.addEventListener("click", () => {
+    localStorage.setItem("darkMode", darkMode === "true" ? "false" : "true");
+    window.location.reload();
+  });
+  if (darkMode === "true") {
+    moonIcon?.classList.remove("hidden");
+    sunIcon?.classList.add("hidden");
+    darkmodeContainer?.classList.add("dark");
+  } else {
+    darkmodeContainer?.classList.remove("dark");
+  }
+
   if (uploadInput.dataset.path !== "dnd" && uploadInput.dataset.path !== "dnd/") {
     if (uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") && user !== "arctur") {
       window.location.replace("/dnd");
@@ -361,7 +388,6 @@ const data: {
   });
 
   if (!user || !password) {
-    const content = document.getElementById("content");
     if (content) content.style.display = "none";
 
     if (!user) {
