@@ -79,33 +79,34 @@ const data: {
     {
       (data || []).map((i) => (
         <a
-          style={{
-            backgroundImage: i.isImage ? `url(${i.link})` : "",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-          }}
           data-user={slug === "dnd" ? i.user : "all"}
-          class="p-2 rounded shadow-md col-span-1 h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink"
+          class=" rounded shadow-md col-span-1 group h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink"
           href={i.isFolder ? i.link : "#"}>
-          <div class="h-6 flex items-center max-h-8 justify-end gap-x-4">
+          <div class="h-6 flex items-center max-h-8 justify-end gap-x-4 z-10 p-4">
             {!i.isFolder && (i.isImage || i.isSound) ? (
               <button
-                class={`w-fit transition-colors hover:text-black active:text-zinc-300 copyItemButton ${
-                  i.isImage ? "text-white" : "text-zinc-700"
+                class={`w-fit transition-colors  active:text-zinc-300 copyItemButton ${
+                  i.isImage ? "text-white hover:text-zinc-200" : "text-zinc-400 hover:text-black"
                 }`}
                 data-link={i.link}>
                 <Icon name="ph:copy" size={24} />
               </button>
             ) : null}
             {(i.isFolder && !i.isImage && !i.isSound) || slug?.startsWith("dnd/common") ? null : (
-              <button class="w-fit transition-colors hover:text-red-500 deleteItemButton" id={i.link}>
+              <button
+                class={`w-fit transition-colors active:text-red-200 copyItemButton text-white hover:text-red-500 deleteItemButton`}
+                id={i.link}>
                 <Icon name="ph:trash" size={24} />
               </button>
             )}
           </div>
 
-          <h2 class="text-2xl group line-clamp-2 min-h-[2rem] max-w-full text-center mt-4 font-bold capitalize">{i.title}</h2>
+          <h2
+            class={`text-2xl group line-clamp-2 z-10 min-h-[2rem] max-w-full text-center mt-4 font-bold capitalize ${
+              i.isImage ? "text-white opacity-0 group-hover:opacity-100 transition-opacity" : "text-black"
+            }`}>
+            {i.title}
+          </h2>
           <div class="flex items-center justify-center max-w-full">
             {i.isFolder ? (
               <div class="w-36">
@@ -119,6 +120,15 @@ const data: {
               </audio>
             ) : null}
           </div>
+          <div
+            class="absolute rounded z-0 flex h-full w-full flex-col items-center justify-end bg-center transition-all group-hover:brightness-75"
+            style={{
+              backgroundImage: i.isImage ? `url(${i.link})` : "",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+            }}
+          />
         </a>
       ))
     }
