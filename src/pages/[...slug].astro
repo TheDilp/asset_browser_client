@@ -47,8 +47,7 @@ const data: {
   lang="en"
   x-data="{darkMode: localStorage.getItem('darkMode')}"
   x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
-  x-bind:data-theme="darkMode"
-  class="bg-zinc-950">
+  x-bind:data-theme="darkMode">
   <div class="min-h-screen h-screen w-screen dark:bg-zinc-950 bg-white" id="container">
     <h1
       class="shadow capitalize border-b py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem] dark:bg-zinc-900 dark:text-white">
