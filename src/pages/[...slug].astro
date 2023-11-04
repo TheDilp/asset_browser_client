@@ -126,7 +126,7 @@ const data: {
           <div
             class="absolute rounded z-0 flex h-full w-full flex-col items-center justify-end bg-center transition-all group-hover:brightness-75"
             style={{
-              backgroundImage: i.isImage ? `url(${i.link})` : "",
+              backgroundImage: i.isImage ? `url(${i.link.replaceAll(" ", "%20")})` : "",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
               backgroundSize: "cover",
