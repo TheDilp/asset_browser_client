@@ -291,6 +291,8 @@ const data: {
         return;
       }
       btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         const accept = confirm("Are you sure you want to delete this item?");
         if (accept) {
           // @ts-ignore
@@ -327,6 +329,7 @@ const data: {
 
       btn.addEventListener("click", async (e) => {
         e.preventDefault();
+        e.stopPropagation();
         // @ts-ignore
         const link = btn.dataset.link;
 
