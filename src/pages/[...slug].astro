@@ -96,12 +96,12 @@ const data: {
               data-image={i.isImage ? i.link : ""}
               class="divide-zinc-700 px-2 min-h-[8rem] border-y border-zinc-700 itemLink cursor-pointer">
               <td
-                class={`px-2 ${i.isImage ? "min-w-[8rem]" : ""}`}
+                class={`px-2 ${i.isImage ? "min-w-[4rem]" : ""}`}
                 style={{
                   backgroundImage: i.isImage ? `url("${i.link.replaceAll(" ", "%20")}")` : "",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
+                  backgroundSize: "contain",
                 }}>
                 {i.isFolder ? (
                   <div class="w-10">
@@ -116,17 +116,18 @@ const data: {
                 ) : null}
               </td>
               <td
-                class={`border  group truncate px-4 z-10 min-h-[2rem] text-white max-w-full itemTitle ${
+                class={`border group z-10  text-white itemTitle ${
                   i.isImage
                     ? "text-white group-hover:opacity-100 text-left w-full transition-opacity text-sm"
                     : "text-black text-base capitalize"
                 }
+                ${i.isFolder ? "[&>*]:hover:text-blue-400" : ""}
             `}>
-                <a class={`text-white w-full`} href={i.isFolder ? i.link : "#"}>
-                  {i.title || i.link}
+                <a class={`text-white min-h-[40px] block`} href={i.isFolder ? i.link : "#"}>
+                  <span class="top-2 relative px-2">{i.title || i.link}</span>
                 </a>
               </td>
-              <td class="px-2 flex justify-between items-center flex-nowrap">
+              <td class="px-2">
                 {!i.isFolder && (i.isImage || i.isSound) ? (
                   <button
                     class={`w-fit  transition-colors active:text-blue-600 copyItemButton ${
