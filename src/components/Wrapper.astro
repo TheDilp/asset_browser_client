@@ -1,13 +1,87 @@
 ---
+import Icon from "astro-icon";
+const { slug } = Astro.params;
 
+const pageTitle = slug ? slug.split("/").at(-1) : "Foundry Asset Manager";
 ---
 
-<html
-  lang="en"
-  >
+<html lang="en">
   <div class="min-h-screen bg-zinc-950" id="container">
+    <h1
+      class="shadow capitalize border-b border-zinc-700 py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem] bg-zinc-900 text-white sticky top-0 z-20">
+      <div class="flex items-center w-full gap-x-2">
+        {
+          slug !== "dnd" && slug ? (
+            <a href={`/${slug?.split("/").slice(0, -1).join("/")}`} class="mr-auto ml-4">
+              <Icon name="ph:caret-left" size={36} />
+            </a>
+          ) : (
+            <a href={`/dnd`} class="mr-auto ml-4">
+              <Icon name="ph:house" size={36} />
+            </a>
+          )
+        }
+        <span class="flex-1 flex justify-center gap-x-2">
+          <span>
+            {pageTitle}
+          </span>
+          {
+            slug !== "dnd" ? (
+              <button class="w-10 hover:text-blue-400 transition-colors active:text-blue-200" id="uploadBtn">
+                <Icon name="ph:upload" />
+              </button>
+            ) : null
+          }
+        </span>
+
+        <button id="go_to_search" class="bg-blue-500 p-1 rounded shadow hover:bg-blue-400 active:bg-blue-600"
+          ><Icon size={16} name="ph:magnifying-glass" /></button
+        >
+
+        <select class="text-base mr-4 p-1 rounded text-white bg-zinc-800" id="userSelect">
+          <option value="">Select user</option>
+          <option value="arctur">Arctur</option>
+          <option value="david">David</option>
+          <option value="marija">Marija</option>
+        </select>
+      </div>
+      <input type="file" class="hidden" name="files" id="uploadInput" data-path={slug} />
+    </h1>
     <slot />
   </div>
+
+  <script>
+    const user = localStorage.getItem("user");
+    const btn = document.getElementById("go_to_search");
+    const userSelect = document.getElementById("userSelect") as HTMLSelectElement;
+    userSelect?.addEventListener("change", (e) => {
+      if (user) {
+        localStorage.removeItem("password");
+      }
+
+      // @ts-ignore
+      localStorage.setItem("user", e.target.value);
+      window.location.assign("/");
+    });
+    if (btn) {
+      btn.addEventListener("click", () => {
+        window.location.replace("/search");
+      });
+    }
+    if (user) {
+      userSelect.value = user;
+
+      const rootContentCards = document.querySelectorAll(".itemLink");
+      rootContentCards.forEach((card) => {
+        // @ts-ignore
+        if (card.dataset.user) {
+          // @ts-ignore
+          if (card.dataset.user !== user && card.dataset.user !== "all") card.classList.add("hidden");
+        }
+        // @ts-ignore
+      });
+    }
+  </script>
 
 
 </html>

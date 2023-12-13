@@ -1,0 +1,191 @@
+---
+import Icon from "astro-icon";
+import Wrapper from "../components/Wrapper.astro";
+---
+
+<Wrapper>
+  <div class="p-4 flex flex-col">
+    <div class="h-10 max-h-10">
+      <input
+        placeholder="Search"
+        id="search_input"
+        class="rounded bg-zinc-700 p-2 w-full text-white focus:outline-none outline-none"
+      />
+    </div>
+
+    <!-- Modal -->
+    <div class="w-screen h-screen absolute top-0 items-center justify-center z-20 overflow-hidden hidden" id="modal">
+      <div class="bg-black opacity-75 w-full h-full absolute z-10" id="modalOverlay"></div>
+      <div class="absolute top-0 right-0 z-20 text-white">
+        <button id="modalCloseBtn">
+          <Icon name="ph:x" size={48} />
+        </button>
+      </div>
+      <div class="z-20 h-[80%] max-w-[80%] flex items-center justify-center">
+        <img id="modalImage" class="object-contain h-full" src="" />
+      </div>
+    </div>
+    <div id="results" class="border-collapse flex flex-col gap-y-0.5 mt-2"></div>
+  </div>
+</Wrapper>
+
+<script>
+  const user = localStorage.getItem("user");
+  const results = document.getElementById("results");
+  const searchInput = document.getElementById("search_input");
+  const modal = document.getElementById("modal");
+
+  const res = await fetch(`${import.meta.env.PUBLIC_BASE_SERVER}/search/${user?.toLowerCase()}`, { method: "GET" });
+
+  const data: {
+    link: string;
+    title: string;
+    isFolder: boolean;
+    isImage: boolean;
+    isSound: boolean;
+    user: "arctur" | "david" | "marija" | "all";
+  }[] = await res.json();
+
+  data.sort((a, b) => {
+    if (a.isFolder && !b.isFolder) return 1;
+    if (!a.isFolder && b.isFolder) return -1;
+    if (a.isImage && !b.isImage) return 1;
+    if (!a.isImage && b.isImage) return -1;
+    return 0;
+  });
+
+  const filterData = (e: any) => {
+    if (results) {
+      results.innerHTML = "";
+    }
+    // @ts-ignore
+    if (data?.length && results && e.target.value) {
+      data
+        // @ts-ignore
+        .filter((item) => {
+          return item.title.toLowerCase().includes(e.target.value.toLowerCase());
+        })
+        .forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "flex items-center border divide-x divide-zinc-700 border-zinc-700 h-12";
+
+          const titleCell = document.createElement("div");
+          titleCell.className = "flex-1 text-white px-2";
+          titleCell.innerHTML = item.title;
+
+          const typeCell = document.createElement("div");
+          typeCell.className = `px-2 min-w-[4rem] h-full flex items-center ${item.isImage ? "min-w-[4rem]" : ""}`;
+
+          if (item.isImage) {
+            typeCell.style.backgroundImage = item.isImage ? `url("${item.link.replaceAll(" ", "%20")}")` : "";
+            typeCell.style.backgroundPosition = "center";
+            typeCell.style.backgroundRepeat = "no-repeat";
+            typeCell.style.backgroundSize = "contain";
+            typeCell.dataset.image = "imageForModal";
+          }
+
+          if (item.isSound) {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.className = "max-h-8";
+
+            const source = document.createElement("source");
+            audio.volume = 0.5;
+            source.src = item.link;
+            audio.append(source);
+            typeCell.append(audio);
+          }
+
+          const actionCell = document.createElement("div");
+          actionCell.className = "min-w-[4rem] h-full flex items-center justify-center px-2";
+
+          const copyButton = document.createElement("button");
+          copyButton.className = "min-w-[1.5rem] h-full";
+
+          //   const deleteButton = document.createElement("button");
+          //   deleteButton.className = "min-w-[1.5rem] h-full";
+
+          const copyIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          //   const deleteIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          copyIcon.setAttributeNS(null, "width", "20");
+          copyIcon.setAttributeNS(null, "height", "20");
+          copyIcon.setAttributeNS(null, "viewBox", "0 0 256 256");
+
+          //   deleteIcon.setAttributeNS(null, "width", "20");
+          //   deleteIcon.setAttributeNS(null, "height", "20");
+          //   deleteIcon.setAttributeNS(null, "viewBox", "0 0 256 256");
+
+          const copyPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          copyPath.setAttributeNS(
+            null,
+            "d",
+            "M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z",
+          );
+          copyPath.setAttributeNS(null, "fill", "white");
+
+          //   const deletePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          //   deletePath.setAttributeNS(null, "fill", "white");
+          //   deletePath.setAttributeNS(
+          //     null,
+          //     "d",
+          //     "M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M96 40a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm96 168H64V64h128Zm-80-104v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0m48 0v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0",
+          //   );
+          copyIcon.append(copyPath);
+          //   deleteIcon.append(deletePath);
+          copyButton.append(copyIcon);
+          copyButton.addEventListener("click", () => {
+            navigator.clipboard.writeText(item.link.replaceAll(" ", "%20"));
+          });
+          //   deleteButton.append(deleteIcon);
+
+          actionCell.append(copyButton);
+          //   actionCell.append(deleteButton);
+
+          row.append(typeCell);
+          row.append(titleCell);
+          row.append(actionCell);
+
+          results.append(row);
+        });
+    }
+
+    const images = document.querySelectorAll(".imageForModal");
+
+    console.log(images);
+    if (images?.length) {
+      images.forEach((image) =>
+        image.addEventListener("click", () => {
+          // @ts-ignore
+          modalImage.src = card.dataset.image;
+          modal?.classList.add("flex");
+          modal?.classList.remove("hidden");
+        }),
+      );
+    }
+  };
+
+  type DebounceFunction = <F extends (...args: any[]) => any>(func: F, delay: number) => (...args: Parameters<F>) => void;
+
+  // Debounce function
+  const debounce: DebounceFunction = (func, delay) => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return (...args) => {
+      const context = this;
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(context, args);
+      }, delay);
+    };
+  };
+
+  function handleInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    // Do something when the input changes
+    filterData(event);
+    // Replace the above line with your desired functionality
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", debounce(handleInput, 400));
+  }
+</script>
