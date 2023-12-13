@@ -32,7 +32,8 @@ const data: {
 }[] = preFormattedData
   ?.map((i) => {
     if (slug === "dnd") {
-      if (i.title.toLowerCase().includes("chronicles") || i.title.toLowerCase().includes("frontier")) return { ...i, user: "arctur" as UserType };
+      if (i.title.toLowerCase().includes("chronicles") || i.title.toLowerCase().includes("frontier"))
+        return { ...i, user: "arctur" as UserType };
       if (i.title.toLowerCase().includes("wake")) return { ...i, user: "david" as UserType };
       if (i.title.toLowerCase().includes("asaraa")) return { ...i, user: "marija" as UserType };
       if (i.title.toLowerCase().includes("common")) return { ...i, user: "all" as UserType };
@@ -44,7 +45,7 @@ const data: {
 
 <Wrapper>
   <h1
-    class="shadow capitalize border-b py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem] bg-zinc-900 text-white">
+    class="shadow capitalize border-b border-zinc-700 py-4 flex items-center justify-center gap-x-2 text-4xl font-bold min-h-[4.5rem] bg-zinc-900 text-white">
     <div class="flex items-center w-full gap-x-2">
       {
         slug !== "dnd" ? (
@@ -78,65 +79,80 @@ const data: {
     <input type="file" class="hidden" name="files" id="uploadInput" data-path={slug} />
   </h1>
 
-  <div class={`grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 p-4`} id="content">
-    {
-      (data || []).map((i) => (
-        <a
-          data-user={slug === "dnd" ? i.user : "all"}
-          data-image={i.isImage ? i.link : ""}
-          class={`rounded shadow-md col-span-1 group h-64 relative overflow-hidden flex flex-col gap-y-0 itemLink text-white bg-zinc-800`}
-          href={i.isFolder ? i.link : "#"}>
-          <div class="h-6 flex items-center max-h-8 justify-end gap-x-4 z-10 p-4">
-            {!i.isFolder && (i.isImage || i.isSound) ? (
-              <button
-                class={`w-fit transition-colors active:text-zinc-300 copyItemButton ${
-                  i.isImage ? "hover:text-zinc-200 text-white" : "hover:text-zinc-400 text-white"
-                }`}
-                data-link={i.link}>
-                <Icon name="ph:copy" size={24} />
-              </button>
-            ) : null}
-            {(i.isFolder && !i.isImage && !i.isSound) || slug?.startsWith("dnd/common") ? null : (
-              <button
-                class={`w-fit transition-colors active:text-red-200 copyItemButton text-white hover:text-red-500 deleteItemButton`}
-                id={i.link}>
-                <Icon name="ph:trash" size={24} />
-              </button>
-            )}
-          </div>
-          <h2
-            class={`text-2xl group truncate px-4 z-10 min-h-[2rem] text-white max-w-full text-center mt-4 font-bold capitalize itemTitle ${
-              i.isImage ? "text-white opacity-0 group-hover:opacity-100 transition-opacity" : "text-black"
-            }
-            `}>
-            {i.title}
-          </h2>
-          <div class="flex items-center justify-center max-w-full">
-            {i.isFolder ? (
-              <div class="w-36">
-                <Icon name="ph:folder" />
-              </div>
-            ) : null}
+  <div class="p-4">
+    <table class="table-auto border-collapse text-white border border-zinc-700">
+      <thead class="border border-zinc-700">
+        <tr class="px-2 text-lg divide-x divide-zinc-700">
+          <th class="px-2">Type</th>
+          <th class="px-2 w-full text-left">Title</th>
+          <th class="px-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          data.map((i) => (
+            <tr
+              data-user={slug === "dnd" ? i.user : "all"}
+              data-image={i.isImage ? i.link : ""}
+              class="divide-zinc-700 px-2 min-h-[8rem] border-y border-zinc-700 itemLink cursor-pointer">
+              <td
+                class={`px-2 ${i.isImage ? "min-w-[8rem]" : ""}`}
+                style={{
+                  backgroundImage: i.isImage ? `url("${i.link.replaceAll(" ", "%20")}")` : "",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "cover",
+                }}>
+                {i.isFolder ? (
+                  <div class="w-10">
+                    <Icon name="ph:folder" />
+                  </div>
+                ) : null}
 
-            {i.isSound ? (
-              <audio class="mt-4" controls>
-                <source src={i.link} />
-              </audio>
-            ) : null}
-          </div>
-          <div
-            class="absolute rounded z-0 flex h-full w-full flex-col items-center justify-end bg-center transition-all group-hover:brightness-75  pointer-events-none"
-            style={{
-              backgroundImage: i.isImage ? `url(${i.link.replaceAll(" ", "%20")})` : "",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-            }}
-          />
-        </a>
-      ))
-    }
+                {i.isSound ? (
+                  <audio class=" max-h-8" controls>
+                    <source src={i.link} />
+                  </audio>
+                ) : null}
+              </td>
+              <td
+                class={`border  group truncate px-4 z-10 min-h-[2rem] text-white max-w-full itemTitle ${
+                  i.isImage
+                    ? "text-white group-hover:opacity-100 text-left w-full transition-opacity text-sm"
+                    : "text-black text-base capitalize"
+                }
+            `}>
+                <a class={`text-white w-full`} href={i.isFolder ? i.link : "#"}>
+                  {i.title || i.link}
+                </a>
+              </td>
+              <td class="px-2 flex justify-between items-center flex-nowrap">
+                {!i.isFolder && (i.isImage || i.isSound) ? (
+                  <button
+                    class={`w-fit  transition-colors active:text-blue-600 copyItemButton ${
+                      i.isImage ? "hover:text-blue-200 text-white" : "hover:text-blue-400 text-white"
+                    }
+                    ${i.isSound ? "mt-1" : ""}
+                    `}
+                    data-link={i.link}>
+                    <Icon name="ph:copy" size={24} />
+                  </button>
+                ) : null}
+                {(i.isFolder && !i.isImage && !i.isSound) || slug?.startsWith("dnd/common") ? null : (
+                  <button
+                    class={`w-fit my-auto transition-colors active:text-red-200 copyItemButton text-white hover:text-red-500 deleteItemButton`}
+                    id={i.link}>
+                    <Icon name="ph:trash" size={24} />
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
   </div>
+
   <div class="text-6xl font-bold mt-4 text-center hidden text-white" id="selectUserWarning">Select a user</div>
   <div class="w-full gap-x-2 justify-center items-center mt-4 hidden" id="selectUserPassword">
     <input
@@ -157,15 +173,14 @@ const data: {
         <Icon name="ph:x" size={48} />
       </button>
     </div>
-    <div class="z-20 h-fit max-h-full w-fit max-w-full">
-      <img id="modalImage" class="object-contain max-w-full w-full h-full max-h-full" src="" />
+    <div class="z-20 h-[80%] max-w-[80%] flex items-center justify-center">
+      <img id="modalImage" class="object-contain h-full" src="" />
     </div>
   </div>
 
   <script>
     document.title = "Foundry Asset Browser";
     const user = localStorage.getItem("user");
-    const darkMode = localStorage.getItem("darkMode");
     const password = localStorage.getItem("password");
 
     document.querySelectorAll("audio").forEach((aud) =>
@@ -186,8 +201,18 @@ const data: {
     const modalCloseButton = document.getElementById("modalCloseBtn");
     const modalOverlay = document.getElementById("modalOverlay");
 
+    const audioElements = document.querySelectorAll("audio");
+
+    if (audioElements?.length) {
+      audioElements.forEach((el) => (el.volume = 0.5));
+    }
+
     if (uploadInput.dataset.path !== "dnd" && uploadInput.dataset.path !== "dnd/") {
-      if ((uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") || uploadInput.dataset.path?.startsWith("dnd/frontier")) && user !== "arctur") {
+      if (
+        (uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") ||
+          uploadInput.dataset.path?.startsWith("dnd/frontier")) &&
+        user !== "arctur"
+      ) {
         window.location.replace("/dnd");
       }
       if (uploadInput.dataset.path?.startsWith("dnd/dark-wake") && user !== "david") {
@@ -243,7 +268,11 @@ const data: {
     deleteItemBtns.forEach((btn) => {
       if (!user) return;
       if (user) {
-        if ((uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") || uploadInput.dataset.path?.startsWith("dnd/frontier")) && user !== "arctur") {
+        if (
+          (uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") ||
+            uploadInput.dataset.path?.startsWith("dnd/frontier")) &&
+          user !== "arctur"
+        ) {
           btn.classList.add("hidden", "pointer-events-none");
           return;
         }
@@ -283,7 +312,11 @@ const data: {
     copyItemBtns.forEach((btn) => {
       if (!user) return;
       if (user) {
-        if ((uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") || uploadInput.dataset.path?.startsWith("dnd/frontier")) && user !== "arctur") {
+        if (
+          (uploadInput.dataset.path?.startsWith("dnd/chronicles-of-salaraan") ||
+            uploadInput.dataset.path?.startsWith("dnd/frontier")) &&
+          user !== "arctur"
+        ) {
           btn.classList.add("hidden", "pointer-events-none");
           return;
         }
