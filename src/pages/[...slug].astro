@@ -38,7 +38,7 @@ const data: {
     }
     return { ...i, user: "all" as UserType };
   })
-  .flatMap((i) => (i ? [i] : []));
+  ?.flatMap((i) => (i ? [i] : []));
 ---
 
 <Wrapper>
@@ -53,7 +53,7 @@ const data: {
       </thead>
       <tbody>
         {
-          data.map((i) => (
+          (data||[])?.map((i) => (
             <tr
               data-user={slug === "dnd" ? i.user : "all"}
               data-image={i.isImage ? i.link : ""}
