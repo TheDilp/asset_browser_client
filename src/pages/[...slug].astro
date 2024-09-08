@@ -26,7 +26,7 @@ const data: {
   isFolder: boolean;
   isImage: boolean;
   isSound: boolean;
-  user: "arctur" | "david" | "marija" | "all";
+  user: "arctur" | "david" | "marija" | "tom" | "all";
 }[] = preFormattedData
   ?.map((i) => {
     if (slug === "dnd") {
@@ -34,6 +34,7 @@ const data: {
         return { ...i, user: "arctur" as UserType };
       if (i.title.toLowerCase().includes("wake")) return { ...i, user: "david" as UserType };
       if (i.title.toLowerCase().includes("asaraa")) return { ...i, user: "marija" as UserType };
+      if (i.title.toLowerCase().includes("gold-rush")) return { ...i, user: "tom" as UserType };
       if (i.title.toLowerCase().includes("common")) return { ...i, user: "all" as UserType };
     }
     return { ...i, user: "all" as UserType };
@@ -187,6 +188,9 @@ const data: {
       if (uploadInput.dataset.path?.startsWith("dnd/asaraa") && user !== "marija") {
         window.location.replace("/dnd");
       }
+      if (uploadInput.dataset.path?.startsWith("dnd/gold-rush") && user !== "tom") {
+        window.location.replace("/dnd");
+      }
     }
     if (modal) {
       if (modalCloseButton) {
@@ -250,6 +254,10 @@ const data: {
           btn.classList.add("hidden", "pointer-events-none");
           return;
         }
+        if (uploadInput.dataset.path?.startsWith("dnd/gold-rush") && user !== "tom") {
+          btn.classList.add("hidden", "pointer-events-none");
+          return;
+        }
         if (uploadInput.dataset.path?.startsWith("dnd/common")) {
           btn.classList.add("hidden", "pointer-events-none");
           return;
@@ -294,6 +302,10 @@ const data: {
           btn.classList.add("hidden", "pointer-events-none");
           return;
         }
+        if (uploadInput.dataset.path?.startsWith("dnd/gold-rush") && user !== "tom") {
+          btn.classList.add("hidden", "pointer-events-none");
+          return;
+        }
 
         btn.addEventListener("click", async (e) => {
           e.preventDefault();
@@ -335,7 +347,14 @@ const data: {
         localStorage.setItem("password", passwordInput.value);
         window.location.reload();
         return;
-      } else {
+      }
+      if (user === "tom" && passwordInput.value === "PrinceThomazzo") {
+        localStorage.setItem("password", passwordInput.value);
+        window.location.reload();
+        return;
+      }
+
+      else {
         alert("Incorrect password!");
       }
     }
