@@ -6,6 +6,6 @@
 <button
 	type="button"
 	{disabled}
-	class={`w-full ${disabled ? 'cursor-not-allowed bg-zinc-400' : 'bg-blue-700'} rounded-md py-1 text-lg font-bold mt-auto shadow`}
+	class={`w-full ${disabled ? 'cursor-not-allowed bg-zinc-400' : 'bg-blue-700'} rounded-md py-1 text-lg font-bold shadow`}
 	>{label}</button
 >
