@@ -10,7 +10,7 @@
 	}
 </script>
 
-<label {title}>
+<label class="h-14" {title}>
 	<span class="text-xs">{title}</span>
 	<input
 		{value}
