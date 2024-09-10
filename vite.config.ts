@@ -5,7 +5,7 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	build: {
 		rollupOptions: {
-			external: ['/app/src/lib/server/util/db.ts']
+			external: ['/app/src/lib/server/util/db']
 		}
 	}
 });
