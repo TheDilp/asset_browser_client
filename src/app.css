@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+	@apply bg-zinc-950 overflow-hidden;
+}
+
+::-webkit-scrollbar {
+	width: 6px; /* width for vertical scrollbars */
+	height: 6px; /* height for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: darkgray;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background-color: lightgray;
+}
+
+/* For Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: darkgray lightgray;
+}

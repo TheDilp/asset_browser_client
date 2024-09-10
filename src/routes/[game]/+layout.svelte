@@ -18,5 +18,12 @@
 			><span>Music</span> <Icon icon="ph:music-notes" font-size={24} /></a
 		>
 	</li>
+	<li
+		class={`border-b top-[1px] relative cursor-pointer flex items-end ${$page.url.pathname?.endsWith('search') ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
+	>
+		<a href={`/${$page.params.game}/search`} class="flex items-end text-lg gap-x-2 max-h-12"
+			><span>Search</span> <Icon icon="ph:magnifying-glass" font-size={24} /></a
+		>
+	</li>
 </ul>
 <slot />

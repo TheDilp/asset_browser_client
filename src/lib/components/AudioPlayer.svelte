@@ -17,6 +17,7 @@
 	) {
 		if (current) {
 			e.preventDefault();
+			current.volume = 0.25;
 			const audios = document.getElementsByTagName('audio');
 
 			for (let index = 0; index < audios.length; index++) {
@@ -59,6 +60,7 @@
 		bind:duration
 		bind:paused
 		bind:this={current}
+		volume={0.25}
 		{id}
 		class=" bg-zinc-950 rounded"
 		preload="metadata"
