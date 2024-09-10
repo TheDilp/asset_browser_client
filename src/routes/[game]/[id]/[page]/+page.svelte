@@ -40,7 +40,9 @@
 		<input
 			on:change={upload}
 			type="file"
-			accept="image/png, image/jpeg, image/webp, image/gif, image/bmp, image/avif"
+			accept={$page.params.id === 'images'
+				? 'image/png, image/jpeg, image/webp, image/gif, image/bmp, image/avif'
+				: 'audio/wave, audio/ogg, audio/flac, audio/mp3'}
 			multiple
 			class="hidden"
 			bind:this={image_upload}
