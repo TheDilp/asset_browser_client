@@ -7,10 +7,7 @@ export const actions: Actions = {
 		const username = data.get('username');
 		const password = data.get('password');
 		if (username && password) {
-			const authData = await db
-				.collection('users')
-				.authWithPassword(username.toString(), password.toString());
-			db.authStore.save(authData.token, authData.record);
+			await db.collection('users').authWithPassword(username.toString(), password.toString());
 		}
 	}
 };
