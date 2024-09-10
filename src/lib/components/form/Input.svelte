@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { HTMLInputTypeAttribute } from 'svelte/elements';
 
+	export let name = '';
 	export let title = '';
 	export let value = '';
 	export let type: HTMLInputTypeAttribute = 'text';
@@ -13,6 +14,7 @@
 <label class="h-14" {title}>
 	<span class="text-xs">{title}</span>
 	<input
+		{name}
 		{value}
 		{type}
 		on:input={handleInput}
