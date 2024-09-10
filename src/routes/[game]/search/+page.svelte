@@ -31,8 +31,13 @@
 
 <div class="py-4 flex flex-col gap-y-2 h-screen">
 	<div class="w-full items-center gap-x-4">
-		<Input autofocus placeholder="Search" bind:value={search} onChange={(e) => debounce(e)} />
+		<Input
+			autofocus
+			placeholder="Search (type at least 3 characters)"
+			bind:value={search}
+			onChange={(e) => debounce(e)}
+		/>
 	</div>
 
-	<PreviewTable data={data.data || []} {preview} />
+	<PreviewTable data={[...data.data.images, ...data.data.music]} {preview} />
 </div>

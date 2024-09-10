@@ -4,7 +4,13 @@
 	import Button from './form/Button.svelte';
 
 	export let preview: string | undefined = undefined;
-	export let data;
+	export let data: {
+		id: string;
+		title: string;
+		url: string;
+		type?: 'images' | 'music';
+		size: number;
+	}[];
 
 	$: type = $page.params.id;
 
@@ -67,7 +73,7 @@
 			</div>
 			<div class="flex items-center py-4 w-80 justify-end">
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				{#if type === 'images'}
+				{#if type === 'images' || item.type === 'images'}
 					<img
 						on:click={() => setPreview(item.url)}
 						src={item.url}
@@ -76,7 +82,7 @@
 						on:keydown={(e) => setPreviewKeyboard(e, item.url)}
 					/>
 				{/if}
-				{#if type === 'music'}
+				{#if type === 'music' || item.type === 'music'}
 					<AudioPlayer id={item.id} url={item.url} />
 				{/if}
 			</div>

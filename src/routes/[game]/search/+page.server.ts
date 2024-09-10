@@ -9,27 +9,36 @@ export async function load({ params, url, locals }) {
 	}
 
 	const searchParam = url.searchParams.get('filter');
-	if (!searchParam) return { data: [] };
-	const image_data = await db.collection('images').getFullList<AssetType>({
+	if (!searchParam || searchParam.length < 3) return { data: { images: [], music: [] } };
+	const image_data = await db.collection('images').getList<AssetType>(1, 100, {
 		expand: 'game_id',
 		sort: 'title',
 		filter: `((game_id.url = '${params.game}' && owner_id = '${locals?.user?.id}') || owner_id = null) && title ?~ '${searchParam}'`,
 		requestKey: ``
 	});
 
-	const music_data = await db.collection('music').getFullList<AssetType>({
+	const music_data = await db.collection('music').getList<AssetType>(1, 100, {
 		expand: 'game_id',
 		sort: 'title',
 		filter: `((game_id.url = '${params.game}' && owner_id = '${locals?.user?.id}') || owner_id = null) && title ?~ '${searchParam}'`,
 		requestKey: ``
 	});
 
-	const formatted = image_data.concat(music_data).map((item) => ({
+	const formatted_images = image_data.items.map((item) => ({
 		id: item.id,
 		title: item.title,
 		url: preview(item.url),
-		size: item.size
+		size: item.size,
+		type: 'images' as const
 	}));
 
-	return { data: formatted };
+	const formatted_music = music_data.items.map((item) => ({
+		id: item.id,
+		title: item.title,
+		url: preview(item.url),
+		size: item.size,
+		type: 'music' as const
+	}));
+
+	return { data: { images: formatted_images, music: formatted_music } };
 }

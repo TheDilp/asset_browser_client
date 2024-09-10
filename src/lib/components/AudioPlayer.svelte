@@ -63,7 +63,7 @@
 		volume={0.25}
 		{id}
 		class=" bg-zinc-950 rounded"
-		preload="metadata"
+		preload="none"
 		on:ended={() => {
 			time = 0;
 		}}
