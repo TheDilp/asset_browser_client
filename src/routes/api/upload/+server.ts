@@ -4,6 +4,9 @@ import { s3Client } from '$lib/server/util/s3.js';
 import type { GameType } from '$lib/types/types.js';
 import { ObjectCannedACL, PutObjectCommand } from '@aws-sdk/client-s3';
 export async function POST(req) {
+	const token = req.cookies.get('pb_auth');
+	db.authStore.loadFromCookie(`pb_auth=${token}`);
+
 	const formData = Object.fromEntries(await req.request.formData());
 	const owner_id = db?.authStore?.model?.id;
 	const items = Object.entries(formData);
