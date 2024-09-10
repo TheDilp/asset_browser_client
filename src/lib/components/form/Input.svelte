@@ -7,10 +7,10 @@
 	export let placeholder = '';
 	export let autofocus = false;
 	export let type: HTMLInputTypeAttribute = 'text';
-	export let onChange: (e: string) => void;
+	export let onChange: undefined | ((e: string) => void);
 	function handleInput(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		value = event.currentTarget.value;
-		onChange(value);
+		if (onChange) onChange(value);
 	}
 </script>
 
