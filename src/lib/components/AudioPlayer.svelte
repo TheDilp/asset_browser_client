@@ -60,7 +60,7 @@
 		bind:duration
 		bind:paused
 		bind:this={current}
-		volume={0.25}
+		volume={0.4}
 		{id}
 		class=" bg-zinc-950 rounded"
 		preload="none"
