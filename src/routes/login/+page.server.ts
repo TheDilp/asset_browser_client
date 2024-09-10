@@ -19,6 +19,6 @@ export const actions: Actions = {
 
 export async function load() {
 	if (db.authStore.token) {
-		return redirect(307, '/assets');
+		return redirect(307, '/assets/images');
 	}
 }
