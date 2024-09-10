@@ -2,15 +2,11 @@ import { db } from '$lib/server/util/db';
 import type { GameType } from '$lib/types/types';
 import { redirect } from '@sveltejs/kit';
 
-export async function load({ cookies }) {
-	const token = cookies.get('pb_auth');
-	db.authStore.loadFromCookie(`pb_auth=${token}`);
-	if (!token) {
-		return redirect(307, '/login');
+export async function load({ locals }) {
+	if (!locals?.user?.id) {
+		return redirect(303, '/login');
 	}
 
-	const data = await db
-		.collection('games')
-		.getFullList<GameType>({ headers: { Authorization: `Bearer ${token}` } });
+	const data = await db.collection('games').getFullList<GameType>();
 	return { data };
 }
