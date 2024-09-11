@@ -23,7 +23,8 @@ export async function load({ params, locals, url }) {
 		id: item.id,
 		title: item.title,
 		url: preview(item.url),
-		size: item.size
+		size: item.size,
+		type: type === 'common' ? 'music' : type
 	}));
 	return { data: formatted, count: data.totalItems, pages: data.totalPages };
 }
