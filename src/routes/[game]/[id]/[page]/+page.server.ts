@@ -9,13 +9,14 @@ export async function load({ params, locals, url }) {
 	}
 
 	const itemsPerPage = Number(url.searchParams.get('count') || 10);
+	const titleFilter = url.searchParams.get('title');
 
 	const data = await db
 		.collection(params.id)
 		.getList<AssetType>(Number(params.page || 1), isNaN(itemsPerPage) ? 10 : itemsPerPage, {
 			sort: 'title',
 			requestKey: `${params.id}/${params.page}`,
-			filter: `owner_id = '${locals?.user?.id}'`
+			filter: `owner_id = '${locals?.user?.id}' ${titleFilter ? `&& title ~ '${titleFilter}'` : ''}`
 		});
 	const formatted = data.items.map((item) => ({
 		id: item.id,

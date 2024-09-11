@@ -3,7 +3,12 @@
 	import { page } from '$app/stores';
 	import PreviewTable from '$lib/components/PreviewTable.svelte';
 	import { goto } from '$app/navigation';
+	import Input from '$lib/components/form/Input.svelte';
+	import { onMount } from 'svelte';
+
 	let preview: string | undefined = undefined;
+	let search = '';
+	let timer: number | undefined = undefined;
 	export let data: {
 		data: { id: string; title: string; size: number; url: string }[];
 		pages: number;
@@ -15,6 +20,7 @@
 	};
 
 	let image_upload: HTMLInputElement | undefined;
+	$: type = $page.params.id;
 	$: pageNumber = Number($page.params.page);
 	$: count = Number($page.url.searchParams.get('count') || 10);
 	function beginUpload() {
@@ -58,9 +64,30 @@
 			}
 		}
 	}
+	function debounce(v: string) {
+		clearTimeout(timer);
+		timer = setTimeout(() => {
+			search = v;
+
+			let query = new URLSearchParams($page.url.searchParams.toString());
+
+			query.set('title', v);
+			goto(`?${query.toString()}`);
+		}, 550);
+	}
+
+	$: if (type) {
+		search = ''; // Clear search whenever the page changes
+	}
+	onMount(() => {
+		const filter = $page.url.searchParams.get('title');
+		if (!search && filter) {
+			search = filter;
+		}
+	});
 </script>
 
-<div class="py-4">
+<div class="py-2">
 	<div class="w-full text-sm text-left flex flex-col overflow-hidden max-h-[calc(90vh)]">
 		<input
 			on:change={upload}
@@ -72,12 +99,22 @@
 			class="hidden"
 			bind:this={image_upload}
 		/>
-		<div class="w-full flex items-end justify-between py-2">
+		<div class="w-full flex items-end justify-between pb-2">
 			<div class="text-xl">
 				Total: {data.count}
 			</div>
-			<div class="w-8 h-8">
-				<Button icon="ph:upload" variant="info" onClick={beginUpload} />
+			<div class="flex items-end gap-x-2">
+				<div>
+					<Input
+						autofocus={!!$page.url.searchParams.get('title')}
+						title="Search"
+						bind:value={search}
+						onChange={(e) => debounce(e)}
+					/>
+				</div>
+				<div class="h-8">
+					<Button icon="ph:upload" label="Upload" variant="info" onClick={beginUpload} />
+				</div>
 			</div>
 		</div>
 		<PreviewTable data={data.data || []} {preview} />

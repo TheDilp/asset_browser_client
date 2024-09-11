@@ -17,8 +17,13 @@
 	type="submit"
 	{disabled}
 	on:click={onClick}
-	class={`w-full ${disabled ? 'cursor-not-allowed bg-zinc-400' : getVariant()} rounded-md py-1 text-lg font-bold shadow flex items-center justify-center`}
-	>{label}
+	class={`w-full ${disabled ? 'cursor-not-allowed bg-zinc-400' : getVariant()} rounded-md py-1 text-lg font-bold shadow flex items-center gap-x-2 px-2 justify-center`}
+>
+	{#if !!label}
+		<span>
+			{label}
+		</span>
+	{/if}
 	{#if !!icon}
 		<Icon {icon} font-size={24} />
 	{/if}
