@@ -23,7 +23,7 @@ export const actions: Actions = {
 					invalidCredentials: true
 				};
 			}
-			throw redirect(303, '/games');
+			return redirect(303, '/games');
 		}
 	}
 };

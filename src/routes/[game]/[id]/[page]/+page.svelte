@@ -21,6 +21,13 @@
 			image_upload.click();
 		}
 	}
+	function selectPage(
+		e: Event & {
+			currentTarget: EventTarget & HTMLSelectElement;
+		}
+	) {
+		console.log(e.currentTarget.value);
+	}
 	async function upload(e: Event & { currentTarget: HTMLInputElement }) {
 		const files = e.currentTarget.files;
 		if (files) {
@@ -63,26 +70,33 @@
 		</div>
 		<PreviewTable data={data.data || []} {preview} />
 	</div>
-	<div class="w-full flex items-center justify-end gap-x-1 py-2">
-		<div class="w-8 h-8">
-			<a href={pageNumber <= 1 ? '#' : `/assets/${$page.params.id}/${pageNumber - 1}`}>
-				<Button
-					variant="info"
-					icon="ph:caret-left"
-					onClick={undefined}
-					disabled={pageNumber === 1}
-				/>
-			</a>
-		</div>
-		<div class="w-8 h-8">
-			<a href={`/assets/${$page.params.id}/${pageNumber + 1}`}>
-				<Button
-					variant="info"
-					icon="ph:caret-right"
-					onClick={undefined}
-					disabled={data.data.length === 0 || pageNumber >= data.pages}
-				/>
-			</a>
+	<div class="w-full flex items-center justify-between">
+		<select on:change={selectPage} value={pageNumber} class=" bg-zinc-800 rounded-md text-lg px-4">
+			{#each Array.from(Array(data.pages).keys()) as page}
+				<option value={page + 1}>Page {page + 1}</option>
+			{/each}
+		</select>
+		<div class="w-full flex items-center justify-end gap-x-1 py-2">
+			<div class="w-8 h-8">
+				<a href={pageNumber <= 1 ? '#' : `/assets/${$page.params.id}/${pageNumber - 1}`}>
+					<Button
+						variant="info"
+						icon="ph:caret-left"
+						onClick={undefined}
+						disabled={pageNumber === 1}
+					/>
+				</a>
+			</div>
+			<div class="w-8 h-8">
+				<a href={`/assets/${$page.params.id}/${pageNumber + 1}`}>
+					<Button
+						variant="info"
+						icon="ph:caret-right"
+						onClick={undefined}
+						disabled={data.data.length === 0 || pageNumber >= data.pages}
+					/>
+				</a>
+			</div>
 		</div>
 	</div>
 </div>
