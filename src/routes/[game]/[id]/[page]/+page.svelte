@@ -39,8 +39,6 @@
 			}
 		}
 	}
-
-	console.log(data);
 </script>
 
 <div class="py-4 overflow-x-auto">
