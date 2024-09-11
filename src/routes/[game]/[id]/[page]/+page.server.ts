@@ -7,18 +7,16 @@ export async function load({ params, locals }) {
 	if (!locals?.user?.id) {
 		return redirect(303, '/login');
 	}
-	const data = (
-		await db.collection(params.id).getList<AssetType>(Number(params.page || 1), 10, {
-			sort: 'title',
-			requestKey: `${params.id}/${params.page}`,
-			filter: `owner_id = '${locals?.user?.id}'`
-		})
-	).items;
-	const formatted = data.map((item) => ({
+	const data = await db.collection(params.id).getList<AssetType>(Number(params.page || 1), 10, {
+		sort: 'title',
+		requestKey: `${params.id}/${params.page}`,
+		filter: `owner_id = '${locals?.user?.id}'`
+	});
+	const formatted = data.items.map((item) => ({
 		id: item.id,
 		title: item.title,
 		url: preview(item.url),
 		size: item.size
 	}));
-	return { data: formatted };
+	return { data: formatted, count: data.totalItems, pages: data.totalPages };
 }

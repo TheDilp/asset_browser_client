@@ -3,8 +3,14 @@
 	import { page } from '$app/stores';
 	import PreviewTable from '$lib/components/PreviewTable.svelte';
 	let preview: string | undefined = undefined;
-	export let data: { data: { id: string; title: string; size: number; url: string }[] } = {
-		data: []
+	export let data: {
+		data: { id: string; title: string; size: number; url: string }[];
+		pages: number;
+		count: number;
+	} = {
+		data: [],
+		count: 0,
+		pages: 0
 	};
 
 	let image_upload: HTMLInputElement | undefined;
@@ -33,6 +39,8 @@
 			}
 		}
 	}
+
+	console.log(data);
 </script>
 
 <div class="py-4 overflow-x-auto">
@@ -47,7 +55,10 @@
 			class="hidden"
 			bind:this={image_upload}
 		/>
-		<div class="w-full flex justify-end py-2">
+		<div class="w-full flex items-end justify-between py-2">
+			<div class="text-xl">
+				Total: {data.count}
+			</div>
 			<div class="w-8 h-8">
 				<Button icon="ph:upload" variant="info" onClick={beginUpload} />
 			</div>
@@ -71,7 +82,7 @@
 					variant="info"
 					icon="ph:caret-right"
 					onClick={undefined}
-					disabled={data.data.length === 0}
+					disabled={data.data.length === 0 || pageNumber >= data.pages}
 				/>
 			</a>
 		</div>
