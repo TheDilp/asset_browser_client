@@ -2,6 +2,7 @@
 	import Button from '$lib/components/form/Button.svelte';
 	import { page } from '$app/stores';
 	import PreviewTable from '$lib/components/PreviewTable.svelte';
+	import { goto } from '$app/navigation';
 	let preview: string | undefined = undefined;
 	export let data: {
 		data: { id: string; title: string; size: number; url: string }[];
@@ -26,7 +27,9 @@
 			currentTarget: EventTarget & HTMLSelectElement;
 		}
 	) {
-		console.log(e.currentTarget.value);
+		const newPageNumber = Number(e.currentTarget.value || 1);
+
+		goto(`/${$page.params.game}/${$page.params.id}/${newPageNumber}`);
 	}
 	async function upload(e: Event & { currentTarget: HTMLInputElement }) {
 		const files = e.currentTarget.files;
