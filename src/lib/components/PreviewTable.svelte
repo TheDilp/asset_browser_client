@@ -75,6 +75,7 @@
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 				{#if type === 'images' || item.type === 'images'}
 					<img
+						loading="lazy"
 						on:click={() => setPreview(item.url)}
 						src={item.url}
 						alt={item.title}
