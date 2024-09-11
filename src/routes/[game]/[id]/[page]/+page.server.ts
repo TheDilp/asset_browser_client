@@ -3,15 +3,20 @@ import { preview } from '$lib/server/util/previewUtils.js';
 import type { AssetType } from '$lib/types/types.js';
 import { redirect } from '@sveltejs/kit';
 
-export async function load({ params, locals }) {
+export async function load({ params, locals, url }) {
 	if (!locals?.user?.id) {
 		return redirect(303, '/login');
 	}
-	const data = await db.collection(params.id).getList<AssetType>(Number(params.page || 1), 10, {
-		sort: 'title',
-		requestKey: `${params.id}/${params.page}`,
-		filter: `owner_id = '${locals?.user?.id}'`
-	});
+
+	const itemsPerPage = Number(url.searchParams.get('count') || 10);
+
+	const data = await db
+		.collection(params.id)
+		.getList<AssetType>(Number(params.page || 1), isNaN(itemsPerPage) ? 10 : itemsPerPage, {
+			sort: 'title',
+			requestKey: `${params.id}/${params.page}`,
+			filter: `owner_id = '${locals?.user?.id}'`
+		});
 	const formatted = data.items.map((item) => ({
 		id: item.id,
 		title: item.title,
