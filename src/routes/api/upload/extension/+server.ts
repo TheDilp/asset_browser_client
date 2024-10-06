@@ -5,14 +5,11 @@ import type { GameType } from '$lib/types/types.js';
 import { ObjectCannedACL, PutObjectCommand } from '@aws-sdk/client-s3';
 export async function POST(req) {
 	const formData = Object.fromEntries(await req.request.formData());
-	const owner_id = db?.authStore?.model?.id;
 	const items = Object.entries(formData);
-	const rootKey = req.url.searchParams.get('game');
-	const type = req.url.searchParams.get('type');
+	const api_key = req.request.headers.get('x-api-key');
+	if (api_key) {
+		const game = await db.collection('games').getFirstListItem<GameType>(`api_key = '${api_key}'`);
 
-	const game = await db.collection('games').getFirstListItem<GameType>(`url = '${rootKey}'`);
-
-	if (rootKey && type && owner_id) {
 		for (let index = 0; index < items.length; index++) {
 			try {
 				const [key, value] = items[index];
@@ -20,7 +17,7 @@ export async function POST(req) {
 				const buffer = (await value.arrayBuffer()) as ArrayBuffer;
 				const command = new PutObjectCommand({
 					Bucket: DO_SPACES_NAME,
-					Key: `dnd/${rootKey}/${key}`,
+					Key: `dnd/${game.url}/${key}`,
 					Body: buffer,
 					ACL: ObjectCannedACL.public_read,
 					// @ts-expect-error typing is wrong
@@ -29,10 +26,10 @@ export async function POST(req) {
 				});
 				await s3Client.send(command);
 
-				await db.collection(type).create({
+				await db.collection('images').create({
 					title: key,
-					url: `dnd/${rootKey}/${key}`,
-					owner_id,
+					url: `dnd/${game.url}/${key}`,
+					owner_id: game.owner_id,
 					size: buffer.byteLength,
 					game_id: game.id
 				});
@@ -40,7 +37,8 @@ export async function POST(req) {
 				console.error(JSON.stringify(error));
 			}
 		}
+		return new Response('Success');
+	} else {
+		return new Response('Something went wrong');
 	}
-
-	return new Response('Ayy');
 }

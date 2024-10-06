@@ -10,4 +10,5 @@ export interface GameType {
 	title: string;
 	url: string;
 	api_key: string;
+	owner_id: string;
 }
