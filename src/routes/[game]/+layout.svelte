@@ -40,6 +40,13 @@
 			><span>Search</span> <Icon icon="ph:magnifying-glass" font-size={24} /></a
 		>
 	</li>
+	<li
+		class={`border-b top-[1px] relative cursor-pointer flex items-end ${$page.url.pathname?.endsWith('api') ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
+	>
+		<a href={`/${$page.params.game}/api`} class="flex items-end text-lg gap-x-2 max-h-12"
+			><span>API</span> <Icon icon="hugeicons:connect" font-size={24} /></a
+		>
+	</li>
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<li
 		class={`border-b top-[1px] relative cursor-pointer flex items-end ml-auto ${$page.url.pathname?.endsWith('search') ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
