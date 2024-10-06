@@ -7,6 +7,8 @@ export async function load({ locals }) {
 		return redirect(303, '/login');
 	}
 
-	const data = await db.collection('games').getFullList<GameType>();
+	const data = await db
+		.collection('games')
+		.getFullList<GameType>({ filter: `owner_id = '${locals.user.id}' || owner_id = null` });
 	return { data };
 }
