@@ -1,5 +1,6 @@
 import { DO_SPACES_NAME } from '$env/static/private';
 import { db } from '$lib/server/util/db.js';
+import { preview } from '$lib/server/util/previewUtils.js';
 import { s3Client } from '$lib/server/util/s3.js';
 import type { GameType } from '$lib/types/types.js';
 import { ObjectCannedACL, PutObjectCommand } from '@aws-sdk/client-s3';
@@ -33,6 +34,9 @@ export async function POST(req) {
 					size: buffer.byteLength,
 					game_id: game.id
 				});
+				const res = new Response(JSON.stringify({ url: preview(`dnd/${game.url}/${key}`) }));
+				res.headers.append('Content-Type', 'application/json');
+				return res;
 			} catch (error) {
 				console.error(JSON.stringify(error));
 			}
