@@ -7,7 +7,7 @@ import { FOUNDRY_SERVICE_ID, COOLIFY_TOKEN } from '$env/static/private';
 
 
 export const actions = {
-	changeWorld: async ({request, }) => {
+	changeWorld: async ({ request }) => {
 		const data = await request.formData();
 		const foundry_id = data.get("foundry_id") as AvailableGamesType;
 		const res = await fetch(`https://admin.salaraan.com/api/v1/services/${FOUNDRY_SERVICE_ID}/envs`, {
@@ -24,7 +24,7 @@ export const actions = {
 		});
 
 		if (res.ok && res.status === 201) {
-			 const restartRes = await fetch(`https://admin.salaraan.com/api/v1/services/${FOUNDRY_SERVICE_ID}/restart`, {
+			const restartRes = await fetch(`https://admin.salaraan.com/api/v1/services/${FOUNDRY_SERVICE_ID}/restart`, {
 				headers: {
 					Authorization: `Bearer ${COOLIFY_TOKEN}`
 				},
@@ -44,25 +44,15 @@ export async function load({ locals }) {
 	const data = await db
 		.collection('games')
 		.getFullList<GameType>({ filter: `owner_id = '${locals.user.id}' || owner_id = null` });
-	try {
-		const activeGameRes = await fetch(
-			`https://admin.salaraan.com/api/v1/services/${FOUNDRY_SERVICE_ID}/envs`,
-			{
-				headers: {
-					Authorization: `Bearer ${COOLIFY_TOKEN}`
-				}
+	const activeGameRes = await fetch(
+		`https://admin.salaraan.com/api/v1/services/${FOUNDRY_SERVICE_ID}/envs`,
+		{
+			headers: {
+				Authorization: `Bearer ${COOLIFY_TOKEN}`
 			}
-		);
-		const activeGameData = (await activeGameRes.json()) as FoundryServiceEnvs[];
-		const currentWorld = activeGameData.find((e) => e.key === 'FOUNDRY_WORLD')?.value;
-	return { data, currentWorld,  };
-
-	} catch (error) {
-		console.info(error)
-	}
-
-
-
-
-	return { data, currentWorld: undefined,};
+		}
+	);
+	const activeGameData = (await activeGameRes.json()) as FoundryServiceEnvs[];
+	const currentWorld = activeGameData.find((e) => e.key === 'FOUNDRY_WORLD')?.value;
+	return { data, currentWorld };
 }
