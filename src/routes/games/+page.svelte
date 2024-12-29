@@ -17,20 +17,30 @@
 	$: activePlayers = '';
 
 	$: enabled = false;
-
+	function isOpen(ws: WebSocket) {
+		return ws.readyState === ws.OPEN;
+	}
 	onMount(() => {
 		const ws = new WebSocket(
 			'wss://play.salaraan.com/socket.io/?session=0526504f3659b5cfe2c38af9&EIO=4&transport=websocket'
 		);
-		ws.onopen = () => {
-			ws.send('40');
-			ws.send(`420["getJoinData"]`);
+
+		ws.addEventListener('open', () => {
+			setTimeout(() => {
+				ws.send('40');
+			}, 250);
+
+			setTimeout(() => {
+				ws.send(`420["getJoinData"]`);
+			}, 500);
 			setInterval(() => {
 				ws.send(`420["getJoinData"]`);
-			}, 5000);
-		};
-		ws.onmessage = (e) => {
+			}, 1500);
+		});
+
+		ws.addEventListener('message', (e) => {
 			if (typeof e?.data === 'string' && e?.data?.startsWith('430')) {
+				console.log(ws.readyState);
 				const formattedText = e?.data?.replace('430', '');
 				try {
 					const formattedData = JSON.parse(formattedText) as [
@@ -43,14 +53,12 @@
 						?.filter((user) => formattedData?.[0]?.activeUsers?.includes(user._id))
 						?.map((user) => user?.name)
 						.join(', ');
-
-					console.log(activePlayers);
 				} catch (error) {
 					console.error(error);
 				}
-				enabled = true;
 			}
-		};
+			enabled = true;
+		});
 	});
 </script>
 
@@ -70,22 +78,24 @@
 		<span>Active players:</span>
 		<span>{activePlayers}</span>
 	</div>
-	{#each data.data as game}
-		<div
-			class="w-full flex flex-col shadow bg-zinc-900 rounded-md items-start line-clamp-3 justify-center aspect-square"
-		>
-			<a href={`/${game.url}/images/1`} class="w-full h-full p-4">
-				<h2 class="text-4xl text-center font-bold">{game.title}</h2>
-			</a>
-			<form action="?/changeWorld" class="w-full" method="POST">
-				<input type="text" class="hidden" name="foundry_id" value={game.foundry_id} />
-				<Button
-					disabled={game.foundry_id === data?.currentWorld || activePlayers?.length > 0}
-					label="Activate game"
-					variant="info"
-					onClick={undefined}
-				/>
-			</form>
-		</div>
-	{/each}
+	{#if enabled}
+		{#each data.data as game}
+			<div
+				class="w-full flex flex-col shadow bg-zinc-900 rounded-md items-start line-clamp-3 justify-center aspect-square"
+			>
+				<a href={`/${game.url}/images/1`} class="w-full h-full p-4">
+					<h2 class="text-4xl text-center font-bold">{game.title}</h2>
+				</a>
+				<form action="?/changeWorld" class="w-full" method="POST">
+					<input type="text" class="hidden" name="foundry_id" value={game.foundry_id} />
+					<Button
+						disabled={game.foundry_id === data?.currentWorld || activePlayers?.length > 0}
+						label="Activate game"
+						variant="info"
+						onClick={undefined}
+					/>
+				</form>
+			</div>
+		{/each}
+	{/if}
 </div>
