@@ -15,11 +15,8 @@
 
 	$: playerCount = 0;
 	$: activePlayers = '';
-
 	$: enabled = false;
-	function isOpen(ws: WebSocket) {
-		return ws.readyState === ws.OPEN;
-	}
+
 	onMount(() => {
 		const ws = new WebSocket(
 			'wss://play.salaraan.com/socket.io/?session=0526504f3659b5cfe2c38af9&EIO=4&transport=websocket'
@@ -40,7 +37,6 @@
 
 		ws.addEventListener('message', (e) => {
 			if (typeof e?.data === 'string' && e?.data?.startsWith('430')) {
-				console.log(ws.readyState);
 				const formattedText = e?.data?.replace('430', '');
 				try {
 					const formattedData = JSON.parse(formattedText) as [
