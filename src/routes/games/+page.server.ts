@@ -2,24 +2,9 @@ import type { AvailableGamesType, FoundryServiceEnvs, GameType } from '$lib/type
 import { db } from '$lib/server/util/db';
 import { redirect } from '@sveltejs/kit';
 import { FOUNDRY_SERVICE_ID, COOLIFY_TOKEN } from '$env/static/private';
-import puppeteer from 'puppeteer';
 
 
-async function fetchDynamicContent(url: string): Promise<string> {
-	const browser = await puppeteer.launch({headless: true});
-	const page = await browser.newPage();
 
-	await page.goto(url); // Wait until the page is fully loaded
-	await page.waitForSelector("div.form-fields.current-players span.count")
-	// Extract the final HTML or specific content
-	const spanContent = await page.$eval(
-		'span.count',
-		(el) => (el?.textContent || "")?.trim()
-	);
-
-	await browser.close();
-	return spanContent;
-}
 
 export const actions = {
 	changeWorld: async ({request, }) => {
@@ -70,8 +55,7 @@ export async function load({ locals }) {
 		);
 		const activeGameData = (await activeGameRes.json()) as FoundryServiceEnvs[];
 		const currentWorld = activeGameData.find((e) => e.key === 'FOUNDRY_WORLD')?.value;
-		const currentPlayerCount = await fetchDynamicContent("https://play.salaraan.com");
-	return { data, currentWorld, currentPlayerCount: Number(currentPlayerCount || 0) };
+	return { data, currentWorld,  };
 
 	} catch (error) {
 		console.info(error)
@@ -80,5 +64,5 @@ export async function load({ locals }) {
 
 
 
-	return { data, currentWorld: undefined, currentPlayerCount: 0};
+	return { data, currentWorld: undefined,};
 }

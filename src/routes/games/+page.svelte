@@ -20,9 +20,6 @@
 	>
 		<span>Currently active game:</span>
 		<span class="font-bold">{world}</span>
-		<span> | </span>
-		<span>Active players:</span>
-		<span>{data?.currentPlayerCount || 0}</span>
 	</div>
 	{#each data.data as game}
 		<div
@@ -34,7 +31,7 @@
 			<form action="?/changeWorld" class="w-full" method="POST">
 				<input type="text" class="hidden" name="foundry_id" value={game.foundry_id} />
 				<Button
-					disabled={game.foundry_id === data?.currentWorld || data?.currentPlayerCount > 0}
+					disabled={game.foundry_id === data?.currentWorld}
 					label="Activate game"
 					variant="info"
 					onClick={undefined}
