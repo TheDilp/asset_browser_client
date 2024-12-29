@@ -16,6 +16,8 @@
 	$: playerCount = 0;
 	$: activePlayers = '';
 
+	$: enabled = false;
+
 	onMount(() => {
 		const ws = new WebSocket(
 			'wss://play.salaraan.com/socket.io/?session=0526504f3659b5cfe2c38af9&EIO=4&transport=websocket'
@@ -46,6 +48,7 @@
 				} catch (error) {
 					console.error(error);
 				}
+				enabled = true;
 			}
 		};
 	});
@@ -67,23 +70,24 @@
 		<span>Active players:</span>
 		<span>{activePlayers}</span>
 	</div>
-
-	{#each data.data as game}
-		<div
-			class="w-full flex flex-col shadow bg-zinc-900 rounded-md items-start line-clamp-3 justify-center aspect-square"
-		>
-			<a href={`/${game.url}/images/1`} class="w-full h-full p-4">
-				<h2 class="text-4xl text-center font-bold">{game.title}</h2>
-			</a>
-			<form action="?/changeWorld" class="w-full" method="POST">
-				<input type="text" class="hidden" name="foundry_id" value={game.foundry_id} />
-				<Button
-					disabled={game.foundry_id === data?.currentWorld}
-					label="Activate game"
-					variant="info"
-					onClick={undefined}
-				/>
-			</form>
-		</div>
-	{/each}
+	{#if enabled}
+		{#each data.data as game}
+			<div
+				class="w-full flex flex-col shadow bg-zinc-900 rounded-md items-start line-clamp-3 justify-center aspect-square"
+			>
+				<a href={`/${game.url}/images/1`} class="w-full h-full p-4">
+					<h2 class="text-4xl text-center font-bold">{game.title}</h2>
+				</a>
+				<form action="?/changeWorld" class="w-full" method="POST">
+					<input type="text" class="hidden" name="foundry_id" value={game.foundry_id} />
+					<Button
+						disabled={game.foundry_id === data?.currentWorld || activePlayers?.length > 0}
+						label="Activate game"
+						variant="info"
+						onClick={undefined}
+					/>
+				</form>
+			</div>
+		{/each}
+	{/if}
 </div>
