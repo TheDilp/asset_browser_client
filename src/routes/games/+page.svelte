@@ -1,15 +1,8 @@
 <script lang="ts">
 	import Button from '$lib/components/form/Button.svelte';
-	import type { AvailableGamesType } from '$lib/types/types.js';
+	import { getWorldName } from '$lib/util/utils.js';
 	import { onMount } from 'svelte';
 	export let data;
-
-	function getWorldName(title: AvailableGamesType | undefined) {
-		if (title === 'tales-from-commora-from-rags') return 'Tales From Commora: Dark Wake';
-		if (title === 'chronicles-of-salaraan-tom') return 'Chronicles of Salaraan: Gold Rush';
-		if (title === 'chronicles-of-salaraan-frontier') return 'Chronicles of Salaraan: Frontier';
-		return 'Loading world...';
-	}
 
 	let world = getWorldName(data?.currentWorld);
 
@@ -21,10 +14,14 @@
 		const ws = new WebSocket(
 			'wss://play.salaraan.com/socket.io/?session=0526504f3659b5cfe2c38af9&EIO=4&transport=websocket'
 		);
-
 		ws.addEventListener('open', () => {
 			setTimeout(() => {
 				ws.send('40');
+				// if (data?.currentWorld) {
+				// 	const form = new FormData();
+				// 	form.append('foundry_id', data.currentWorld);
+				// 	fetch('/api/world', { method: 'POST', body: form });
+				// }
 			}, 150);
 
 			setTimeout(() => {
@@ -34,7 +31,6 @@
 				ws.send(`420["getJoinData"]`);
 			}, 5000);
 		});
-
 		ws.addEventListener('message', (e) => {
 			if (typeof e?.data === 'string' && e?.data?.startsWith('430')) {
 				const formattedText = e?.data?.replace('430', '');
@@ -84,12 +80,7 @@
 				</a>
 				<form action="?/changeWorld" class="w-full" method="POST">
 					<input type="text" class="hidden" name="foundry_id" value={game.foundry_id} />
-					<Button
-						disabled={game.foundry_id === data?.currentWorld || activePlayers?.length > 0}
-						label="Activate game"
-						variant="info"
-						onClick={undefined}
-					/>
+					<Button label="Activate game" variant="info" onClick={undefined} />
 				</form>
 			</div>
 		{/each}
