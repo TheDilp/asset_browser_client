@@ -25,14 +25,14 @@
 		ws.addEventListener('open', () => {
 			setTimeout(() => {
 				ws.send('40');
-			}, 250);
+			}, 150);
 
 			setTimeout(() => {
 				ws.send(`420["getJoinData"]`);
 			}, 500);
 			setInterval(() => {
 				ws.send(`420["getJoinData"]`);
-			}, 1500);
+			}, 5000);
 		});
 
 		ws.addEventListener('message', (e) => {
