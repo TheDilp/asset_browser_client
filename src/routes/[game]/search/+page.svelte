@@ -39,5 +39,5 @@
 		/>
 	</div>
 
-	<PreviewTable data={[...data.data.images, ...data.data.music]} {preview} />
+	<PreviewTable data={[...(data.data.images || []), ...(data.data.music || [])]} {preview} />
 </div>

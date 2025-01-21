@@ -27,9 +27,9 @@
 		>
 	</li>
 	<li
-		class={`border-b top-[1px] relative cursor-pointer flex items-end ${$page.params.id === 'common' ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
+		class={`border-b top-[1px] relative cursor-pointer flex items-end ${$page.url.pathname?.includes('common') ? 'font-medium border-blue-500' : 'border-zinc-700'} `}
 	>
-		<a href={`/${$page.params.game}/common/1`} class="flex items-end text-lg gap-x-2 max-h-12"
+		<a href={`/${$page.params.game}/common`} class="flex items-end text-lg gap-x-2 max-h-12"
 			><span>Common</span> <Icon icon="ph:folder-open" font-size={24} /></a
 		>
 	</li>
