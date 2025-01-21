@@ -78,13 +78,13 @@
 		}, 550);
 	}
 
-	$: if (folder) {
-		const folderGrid = document.getElementById('folder-grid');
-		if (folderGrid) {
-			folderGrid.scrollTop = 0;
-		}
-	}
 	onMount(() => {
+		if (folder) {
+			const folderGrid = document?.getElementById?.('folder-grid');
+			if (folderGrid) {
+				folderGrid.scrollTop = 0;
+			}
+		}
 		const filter = $page.url.searchParams.get('title');
 		if (!search && filter) {
 			search = filter;

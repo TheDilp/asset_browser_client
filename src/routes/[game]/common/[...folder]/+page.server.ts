@@ -16,13 +16,21 @@ export async function load({ params, locals }) {
 		Delimiter: '/'
 	});
 	const res = await s3Client.send(command);
-	const data = (res.Contents || []).map((item) => ({
-		id: item.Key,
-		title: item.Key?.split('/')?.at(-1) || '',
-		url: preview(item.Key || ''),
-		size: item.Size,
-		type: 'music'
-	}));
+	const data = (res.Contents || [])
+		.map((item) => ({
+			id: item.Key,
+			title: item.Key?.split('/')?.at(-1) || '',
+			url: preview(item.Key || ''),
+			size: item.Size,
+			type: 'music'
+		}))
+		.filter(
+			(item) =>
+				item.id?.endsWith('.mp3') ||
+				item.id?.endsWith('.ogg') ||
+				item.id?.endsWith('.flac') ||
+				item.id?.endsWith('.wav')
+		);
 	return {
 		data,
 		folders: (res.CommonPrefixes || [])?.map((prefix) => prefix.Prefix).filter(Boolean),
