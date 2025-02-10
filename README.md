@@ -1,4 +1,4 @@
-Svelte application that allowes users to log in and manage their assets in an S3 compatible Object Storage service.
+Svelte application that allows users to log in and manage their assets in an S3 compatible Object Storage service.
 
 Features: Authentication, object upload/download/deletion, object search, Chrome extension for quick uploading an image from any internet website.
 
