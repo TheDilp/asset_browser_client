@@ -1,8 +1,6 @@
 <script lang="ts">
-	import Button from '$lib/components/form/Button.svelte';
 	import { page } from '$app/stores';
 	import PreviewTable from '$lib/components/PreviewTable.svelte';
-	import { goto } from '$app/navigation';
 	import Input from '$lib/components/form/Input.svelte';
 	import { onMount } from 'svelte';
 

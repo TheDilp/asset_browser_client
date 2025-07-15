@@ -30,10 +30,20 @@ export async function load({ params, locals }) {
 				item.id?.endsWith('.ogg') ||
 				item.id?.endsWith('.flac') ||
 				item.id?.endsWith('.wav')
-		);
+		)
+		.sort((a,b) => {
+			if (a > b) return 1;
+			if (a < b) return -1;
+			return 0;
+		})
+		;
 	return {
 		data,
-		folders: (res.CommonPrefixes || [])?.map((prefix) => prefix.Prefix).filter(Boolean),
+		folders: (res.CommonPrefixes || [])?.map((prefix) => prefix.Prefix).filter(Boolean).sort((a,b) => {
+			if (a > b) return 1;
+			if (a < b) return -1;
+			return 0;
+		}),
 		count: res.Contents?.length || 0,
 		pages: 0
 	};
