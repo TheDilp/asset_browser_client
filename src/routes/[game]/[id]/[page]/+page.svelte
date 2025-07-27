@@ -10,7 +10,7 @@
 	let search = '';
 	let timer: number | undefined = undefined;
 	export let data: {
-		data: { id: string; title: string; size: number; url: string }[];
+		data: { id: string; title: string; size: number; url: string; createdAt: string }[];
 		pages: number;
 		count: number;
 	} = {

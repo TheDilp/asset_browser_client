@@ -2,10 +2,12 @@
 	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
 	import { page } from '$app/stores';
 	import Button from './form/Button.svelte';
+	import { goto } from '$app/navigation';
 
 	export let preview: string | undefined = undefined;
 	export let data: {
 		id: string;
+		createdAt: string;
 		title: string;
 		url: string;
 		type?: 'images' | 'music';
@@ -13,6 +15,8 @@
 	}[];
 
 	$: type = $page.params.id;
+
+	$: sort = $page.url.searchParams.get('sort');
 
 	function setPreview(url: string) {
 		preview = url;
@@ -28,6 +32,17 @@
 	function clearPreview(e: MouseEvent) {
 		e.preventDefault();
 		preview = undefined;
+	}
+	function changeSort(column: string) {
+		const sort = $page.url.searchParams.get('sort');
+		const newParams = new URLSearchParams($page.url.searchParams.toString());
+		if (!sort) newParams.set('sort', `+${column}`);
+		else if (sort === `+${column}`) newParams.set('sort', `-${column}`);
+		else if (sort === `-${column}`) newParams.set('sort', `+${column}`);
+		else newParams.set('sort', `+${column}`);
+		console.log(newParams);
+
+		goto(`${$page.url.pathname}?${newParams.toString()}`);
 	}
 	async function deleteItem(payload: { type: string; id: string; asset_url: string }) {
 		const confirmDelete = confirm('Are you sure you want to delete this item?');
@@ -60,7 +75,22 @@
 	</div>
 {/if}
 <div class="text-xs flex items-center uppercase bg-zinc-900 text-zinc-400 gap-x-8 px-4">
-	<div class="flex-1 py-3">Title</div>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div
+		class={`flex-1 py-3 cursor-pointer ${sort?.includes('title') ? 'text-blue-300' : ''}`}
+		on:click={() => changeSort('title')}
+	>
+		Title
+	</div>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div
+		class={`w-20 py-3 cursor-pointer ${sort?.includes('created') ? 'text-blue-300' : ''}`}
+		on:click={() => changeSort('created')}
+	>
+		Created at
+	</div>
 	<div class="py-3 w-80 text-right">Preview</div>
 	<div class="py-3 w-24 text-right">Size</div>
 	<div class="py-3 w-24 text-right">Actions</div>
@@ -70,6 +100,9 @@
 		<div class="border-b bg-zinc-800 border-zinc-700 flex flex-row flex-nowrap px-4 gap-x-8">
 			<div class="flex-1 py-4 font-medium whitespace-nowrap text-white text-xl items-center flex">
 				{item.title}
+			</div>
+			<div class="w-20 py-4 font-medium whitespace-nowrap text-white text-xl items-center flex">
+				{new Date(item.createdAt).toLocaleString()}
 			</div>
 			<div class="flex items-center py-4 w-80 justify-end">
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->

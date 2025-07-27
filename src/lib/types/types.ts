@@ -3,6 +3,7 @@ export interface AssetType {
 	title: string;
 	url: string;
 	size: number;
+	created: string;
 }
 
 export type AvailableGamesType = 'tales-from-commora-from-rags' | 'chronicles-of-salaraan-tom' | 'chronicles-of-salaraan-frontier';
