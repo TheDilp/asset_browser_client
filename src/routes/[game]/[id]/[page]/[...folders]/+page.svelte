@@ -54,10 +54,13 @@
 				data.append(files[index].name, files[index]);
 			}
 			try {
-				await fetch(`/api/upload?game=${$page.params.game}&type=${$page.params.id}`, {
-					method: 'POST',
-					body: data
-				});
+				await fetch(
+					`/api/upload?game=${$page.params.game}&type=${$page.params.id}&folder=${$page.params.folders}`,
+					{
+						method: 'POST',
+						body: data
+					}
+				);
 				window.location.reload();
 			} catch (error) {
 				console.error(error);
@@ -72,7 +75,7 @@
 		data.append(folderName, file);
 		try {
 			await fetch(
-				`/api/upload?game=${$page.params.game}&type=${$page.params.id}&folder=${$page.params.folder}`,
+				`/api/upload?game=${$page.params.game}&type=${$page.params.id}&folder=${$page.params.folders}`,
 				{
 					method: 'POST',
 					body: data

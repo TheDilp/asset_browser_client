@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import Button from './form/Button.svelte';
 	import { goto } from '$app/navigation';
+	import Icon from '@iconify/svelte';
 
 	export let preview: string | undefined = undefined;
 	export let data: {
@@ -97,16 +98,23 @@
 </div>
 <div class="flex flex-col max-h-[90%] overflow-y-auto">
 	{#each data as item (item.id)}
-		<div class="border-b bg-zinc-800 border-zinc-700 flex flex-row flex-nowrap px-4 gap-x-8">
-			<div class="flex-1 py-4 font-medium whitespace-nowrap text-white text-xl items-center flex">
-				{item.title}
+		<div class="border-b bg-zinc-800 border-zinc-700 flex flex-row flex-nowrap px-4 h-14 gap-x-8">
+			<div class="flex-1 font-medium whitespace-nowrap text-white text-xl items-center flex">
+				{#if item.size === 0}
+					<a class="flex items-center gap-x-2" href={`${$page.url.pathname}/${item.title}`}>
+						<Icon icon="ph:folder" />
+						{item.title}
+					</a>
+				{:else}
+					{item.title}
+				{/if}
 			</div>
-			<div class="w-20 py-4 font-medium whitespace-nowrap text-white text-xl items-center flex">
+			<div class="w-20 font-medium whitespace-nowrap text-white text-xl items-center flex">
 				{new Date(item.createdAt).toLocaleString()}
 			</div>
-			<div class="flex items-center py-4 w-80 justify-end">
+			<div class="flex items-center w-80 justify-end">
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				{#if type === 'images' || item.type === 'images'}
+				{#if (type === 'images' || item.type === 'images') && item.size !== 0}
 					<img
 						loading="lazy"
 						on:click={() => setPreview(item.url)}
@@ -120,13 +128,19 @@
 					<AudioPlayer id={item.id} url={item.url} />
 				{/if}
 			</div>
-			<div class="py-4 flex items-center justify-end w-24">
-				{(item.size / 1000000).toFixed(2)} MB
-			</div>
-			<div class=" flex items-center gap-x-2 py-4 w-24 justify-end">
-				<div class="w-8 h-8">
-					<Button icon="ph:copy" onClick={() => copyUrl(item.url)} />
+			{#if item.size === 0}
+				<div class="w-24" />
+			{:else}
+				<div class="flex items-center justify-end w-24">
+					{(item.size / 1000000).toFixed(2)} MB
 				</div>
+			{/if}
+			<div class=" flex items-center gap-x-2 w-24 justify-end">
+				{#if item.size !== 0}
+					<div class="w-8 h-8">
+						<Button icon="ph:copy" onClick={() => copyUrl(item.url)} />
+					</div>
+				{/if}
 				<div class="w-8 h-8">
 					<Button
 						icon="ph:trash"

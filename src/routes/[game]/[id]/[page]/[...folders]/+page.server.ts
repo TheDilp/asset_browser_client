@@ -11,18 +11,23 @@ export async function load({ params, locals, url }) {
 	const itemsPerPage = Number(url.searchParams.get('count') || 10);
 	const titleFilter = url.searchParams.get('title');
 	const sort = url.searchParams.get("sort");
+	const folderPath = params.folders || "";
 	const data = await db
 		.collection(type === 'common' ? 'music' : type)
 		.getList<AssetType>(Number(params.page || 1), isNaN(itemsPerPage) ? 10 : itemsPerPage, {
 			sort: `size,${sort || 'title'}`,
 			requestKey: `${params.id}/${params.page}`,
-			filter: `owner_id = ${type === 'common' ? 'null' : `'${locals?.user?.id}'`} ${titleFilter ? `&& title ~ '${titleFilter}'` : ''} && 
-			(url ~ 'dnd/${params.game}/%.webp' || url ~ 'dnd/${params.game}/%.png' || url ~ 'dnd/${params.game}/%.jpg' || url ~ 'dnd/${params.game}/%.jpeg' || size = 0)
-			&& ((url !~ 'dnd/${params.game}/%/%.%' && size != 0) || (url !~ 'dnd/${params.game}/%/%' && size = 0))`
+			filter: `owner_id = ${type === 'common' ? 'null' : `'${locals?.user?.id}'`} ${titleFilter ? `&& title ~ '${titleFilter}'` : ''} ${folderPath ? `&& 
+			(
+				(url ~ 'dnd/${params.game}/${folderPath}/%.webp' || url ~ 'dnd/${params.game}/${folderPath}/%.png' || url ~ 'dnd/${params.game}/${folderPath}/%.jpg' || url ~ 'dnd/${params.game}/${folderPath}/%.jpeg')
+				(url !~ 'dnd/${params.game}/${folderPath}/%/%.webp' || url ~ 'dnd/${params.game}/${folderPath}/%/%.png' || url ~ 'dnd/${params.game}/${folderPath}/%/%.jpg' || url ~ 'dnd/${params.game}/${folderPath}/%/%.jpeg')
+				
+			) 
+			|| (size = 0 && url ~ 'dnd/${params.game}/${folderPath}/%')
+			&& title != '${folderPath}'` : ""}`
 		});
-		
-	
-		const formatted = data.items.map((item) => ({
+
+	const formatted = data.items.map((item) => ({
 		id: item.id,
 		createdAt: item.created,
 		title: item.title,
