@@ -22,11 +22,16 @@
 	$: folder = $page.params.folder;
 
 	$: filteredData = data.data;
+
+	$: filteredFolders = data.folders;
 	function debounce(v: string) {
 		clearTimeout(timer);
 		timer = setTimeout(() => {
 			filteredData = data.data.filter((item) =>
 				item.title?.toLowerCase()?.includes(v.toLowerCase())
+			);
+			filteredFolders = data.folders.filter((folder) =>
+				folder?.toLowerCase()?.includes(v.toLowerCase())
 			);
 		}, 550);
 	}
@@ -45,15 +50,18 @@
 	});
 </script>
 
-<div class="py-2 max-h-[90%]">
-	{#if data.folders.length}
-		<div id="folder-grid" class="grid grid-cols-6 gap-4 overflow-y-auto max-h-[95vh] p-4">
-			{#each data.folders as folder}
+<div class="py-2 max-h-[95vh] overflow-hidden">
+	<div class="mb-0 px-0.5 bg-zinc-950 py-2">
+		<Input placeholder="Search" title="" bind:value={search} onChange={(e) => debounce(e)} />
+	</div>
+	{#if filteredFolders.length}
+		<div id="folder-grid" class="w-full flex flex-col gap-y-1 overflow-y-auto max-h-[93vh] p-4">
+			{#each filteredFolders as folder}
 				<a
 					href={`/${$page.params.game}/common/${folder.replace('dnd/common/music/', '')}`}
-					class="w-full bg-zinc-800 h-48 shadow p-2 rounded-md"
+					class="w-full bg-zinc-800 max-h-20 shadow px-2 py-1 rounded-md text-sm hover:bg-zinc-700 hover:text-blue-300"
 				>
-					<h2 class="text-wrap text-center text-xl text-bold">
+					<h2 class="text-wrap text-bold text-lg">
 						{folder.split('/').at(-2)?.replaceAll('_', ' ')}
 					</h2>
 				</a>
@@ -65,9 +73,6 @@
 			<div class="w-full flex items-end justify-between pb-2">
 				<div class="text-xl">
 					Total: {data.count}
-				</div>
-				<div class="mr-0.5">
-					<Input title="Search" bind:value={search} onChange={(e) => debounce(e)} />
 				</div>
 			</div>
 			<PreviewTable data={filteredData || []} {preview} />
