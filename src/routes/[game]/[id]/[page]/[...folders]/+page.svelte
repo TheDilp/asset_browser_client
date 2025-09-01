@@ -122,8 +122,18 @@
 			bind:this={image_upload}
 		/>
 		<div class="w-full flex items-end justify-between pb-2">
-			<div class="text-xl">
-				Total: {data.count}
+			<div class="flex items-center gap-x-2 text-xl">
+				<div>
+					<Button
+						label="Back"
+						variant="info"
+						icon="ph:caret-left"
+						onClick={() => goto($page.url.href.split('/').slice(0, -1).join('/'))}
+					/>
+				</div>
+				<span>
+					Total: {data.count}
+				</span>
 			</div>
 			<div class="flex items-end gap-x-2">
 				<div>
