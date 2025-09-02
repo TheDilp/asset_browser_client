@@ -50,12 +50,12 @@
 	});
 </script>
 
-<div class="py-2 max-h-[95vh] overflow-hidden">
+<div class="py-2 h-[95vh] max-h-[95vh] overflow-hidden">
 	<div class="mb-0 px-0.5 bg-zinc-950 py-2">
 		<Input placeholder="Search" title="" bind:value={search} onChange={(e) => debounce(e)} />
 	</div>
 	{#if filteredFolders.length}
-		<div id="folder-grid" class="w-full flex flex-col gap-y-1 overflow-y-auto max-h-[93vh] p-4">
+		<div id="folder-grid" class="w-full flex flex-col gap-y-1 overflow-y-auto max-h-[95%] p-4">
 			{#each filteredFolders as folder}
 				<a
 					href={`/${$page.params.game}/common/${folder.replace('dnd/common/music/', '')}`}
