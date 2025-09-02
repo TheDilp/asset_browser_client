@@ -98,7 +98,9 @@
 </div>
 <div class="flex flex-col max-h-[90%] overflow-y-auto">
 	{#each data as item (item.id)}
-		<div class="border-b bg-zinc-800 border-zinc-700 flex flex-row flex-nowrap px-4 h-14 gap-x-8">
+		<div
+			class="border-b bg-zinc-800 border-zinc-700 flex flex-row flex-nowrap px-4 min-h-14 max-h-14 h-14 gap-x-8"
+		>
 			<div class="flex-1 font-medium whitespace-nowrap text-white text-xl items-center flex">
 				{#if item.size === 0}
 					<a class="flex items-center gap-x-2" href={`${$page.url.pathname}/${item.title}`}>
@@ -110,7 +112,7 @@
 				{/if}
 			</div>
 			<div class="w-20 font-medium whitespace-nowrap text-white text-xl items-center flex">
-				{new Date(item.createdAt).toLocaleString()}
+				{item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}
 			</div>
 			<div class="flex items-center w-80 justify-end">
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
