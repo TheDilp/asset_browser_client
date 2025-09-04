@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import PreviewTable from '$lib/components/PreviewTable.svelte';
-	import Input from '$lib/components/form/Input.svelte';
 	import { onMount } from 'svelte';
 
 	let preview: string | undefined = undefined;
