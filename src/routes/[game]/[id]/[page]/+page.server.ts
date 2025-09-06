@@ -15,7 +15,7 @@ export async function load({ params, locals, url }) {
 	const data = await db
 		.collection(type === 'common' ? 'music' : type)
 		.getList<AssetType>(Number(params.page || 1), isNaN(itemsPerPage) ? 10 : itemsPerPage, {
-			sort: `size,${sort || 'title'}`,
+			sort: `${sort || 'title'}`,
 			requestKey: `${params.id}/${params.page}`,
 			filter: `owner_id = ${type === 'common' ? 'null' : `'${locals?.user?.id}'`} ${titleFilter ? `&& title ~ '${titleFilter}'` : ''} && 
 			(url ~ 'dnd/${params.game}/%.webp' || url ~ 'dnd/${params.game}/%.png' || url ~ 'dnd/${params.game}/%.jpg' || url ~ 'dnd/${params.game}/%.jpeg' || size = 0)

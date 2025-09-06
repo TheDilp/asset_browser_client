@@ -172,7 +172,11 @@
 		</div>
 		<div class="w-full flex items-center justify-end gap-x-1 py-2">
 			<div class="w-8 h-8">
-				<a href={pageNumber <= 1 ? '#' : `/assets/${$page.params.id}/${pageNumber - 1}`}>
+				<a
+					href={pageNumber <= 1
+						? '#'
+						: `/${$page.params.game}/${$page.params.id}/${pageNumber - 1}`}
+				>
 					<Button
 						variant="info"
 						icon="ph:caret-left"
@@ -182,7 +186,7 @@
 				</a>
 			</div>
 			<div class="w-8 h-8">
-				<a href={`/assets/${$page.params.id}/${pageNumber + 1}`}>
+				<a href={`/${$page.params.game}/${$page.params.id}/${pageNumber + 1}`}>
 					<Button
 						variant="info"
 						icon="ph:caret-right"
