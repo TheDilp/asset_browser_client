@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Button from '$lib/components/form/Button.svelte';
-	import { page } from '$app/stores';
-	import PreviewTable from '$lib/components/PreviewTable.svelte';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import Button from '$lib/components/form/Button.svelte';
 	import Input from '$lib/components/form/Input.svelte';
+	import PreviewTable from '$lib/components/PreviewTable.svelte';
 	import { onMount } from 'svelte';
 
 	let preview: string | undefined = undefined;
@@ -94,7 +94,7 @@
 			type="file"
 			accept={$page.params.id === 'images'
 				? 'image/png, image/jpeg, image/webp, image/gif, image/bmp, image/avif'
-				: 'audio/wave, audio/ogg, audio/flac, audio/mp3'}
+				: 'audio/wave, audio/ogg, audio/flac, audio/mp3, audio/opus'}
 			multiple
 			class="hidden"
 			bind:this={image_upload}
