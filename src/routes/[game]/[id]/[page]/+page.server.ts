@@ -18,8 +18,7 @@ export async function load({ params, locals, url }) {
 			sort: `${sort || 'title'}`,
 			requestKey: `${params.id}/${params.page}`,
 			filter: `owner_id = ${type === 'common' ? 'null' : `'${locals?.user?.id}'`} ${titleFilter ? `&& title ~ '${titleFilter}'` : ''} && 
-			(url ~ 'dnd/${params.game}/%.webp' || url ~ 'dnd/${params.game}/%.png' || url ~ 'dnd/${params.game}/%.jpg' || url ~ 'dnd/${params.game}/%.jpeg' || size = 0)
-			&& ((url !~ 'dnd/${params.game}/%/%.%' && size != 0) || (url !~ 'dnd/${params.game}/%/%' && size = 0)) && game_id = '${gameId}'`
+			((url !~ 'dnd/${params.game}/%/%.%' && size != 0) || (url !~ 'dnd/${params.game}/%/%' && size = 0)) && game_id = '${gameId}'`
 		});
 		
 	
