@@ -20,8 +20,8 @@ export default function Input({
 	onChange
 }: Props) {
 	return (
-		<label className="h-14" title={title}>
-			<span className="text-xs">{title}</span>
+		<label className="h-16 flex flex-col gap-y-1" title={title}>
+			<span className="text-xs font-mono uppercase tracking-wide text-vault-muted">{title}</span>
 			<input
 				placeholder={placeholder}
 				autoFocus={autoFocus}
@@ -29,7 +29,7 @@ export default function Input({
 				value={value}
 				type={type}
 				onChange={(e) => onChange?.(e.currentTarget.value)}
-				className="px-2 rounded h-8 w-full bg-zinc-800 text-white focus:outline-0 focus:ring-2 focus:border-0 ring-offset-0"
+				className="px-3 rounded-vault h-9 w-full bg-vault-surface border border-vault-border text-vault-text placeholder:text-vault-muted/60 focus:outline-none focus:ring-2 focus:ring-vault-accent focus:border-vault-accent transition-colors duration-150"
 			/>
 		</label>
 	);

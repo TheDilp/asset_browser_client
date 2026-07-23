@@ -61,11 +61,9 @@ const count = res.Contents?.length || 0;
 					{folders.map((f) => (
 						<a
 							href={`/${game}/common/${f.replace('dnd/common/music/', '')}`}
-							class="w-full bg-zinc-800 max-h-20 shadow px-2 py-1 rounded-md text-sm hover:bg-zinc-700 hover:text-blue-300"
+							class="w-full bg-vault-surface border border-vault-border hover:bg-vault-surface-raised hover:border-vault-accent/40 rounded-vault transition-colors duration-150 px-3 py-2 text-sm"
 						>
-							<h2 class="text-wrap text-bold text-lg">
-								{f.split('/').at(-2)?.replaceAll('_', ' ')}
-							</h2>
+							<h2 class="text-vault-text">{f.split('/').at(-2)?.replaceAll('_', ' ')}</h2>
 						</a>
 					))}
 				</div>
@@ -75,7 +73,7 @@ const count = res.Contents?.length || 0;
 			data.length > 0 && (
 				<div class="w-full text-sm text-left flex flex-col overflow-hidden max-h-[calc(90vh)]">
 					<div class="w-full flex items-end justify-between pb-2">
-						<div class="text-xl">Total: {count}</div>
+						<div class="font-mono text-sm text-vault-muted">Total: {count}</div>
 					</div>
 					<PreviewTable client:load data={data} type="music" />
 				</div>

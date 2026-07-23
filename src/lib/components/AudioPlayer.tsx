@@ -59,7 +59,7 @@ export default function AudioPlayer({ id = '', url = '' }: Props) {
 					if (el) el.volume = 0.4;
 				}}
 				id={id}
-				className=" bg-zinc-950 rounded"
+				className="bg-vault-ink rounded-vault"
 				preload="none"
 				onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
 				onDurationChange={(e) => setDuration(e.currentTarget.duration)}
@@ -75,20 +75,19 @@ export default function AudioPlayer({ id = '', url = '' }: Props) {
 			<div className="w-full flex items-center gap-x-2">
 				<input
 					type="range"
-					className="flex-1"
+					className="flex-1 vault-range"
 					min="0"
 					max={duration}
 					value={time}
 					onChange={() => {}}
 					onPointerDown={handlePointerDown}
 				/>
-				<div className="w-8 h-8">
-					<Button
-						icon={paused ? 'ph:play' : 'ph:pause'}
-						onClick={playPause}
-						variant={paused ? 'primary' : 'info'}
-					/>
-				</div>
+				<Button
+					icon={paused ? 'ph:play' : 'ph:pause'}
+					onClick={playPause}
+					variant="ghost"
+					block={false}
+				/>
 			</div>
 		</>
 	);

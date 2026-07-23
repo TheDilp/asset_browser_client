@@ -5,14 +5,19 @@ interface Props {
 	label?: string;
 	icon?: string;
 	disabled?: boolean;
-	variant?: 'primary' | 'info' | 'error';
+	variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+	block?: boolean;
 	onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
 function getVariantClass(variant: Props['variant']) {
-	if (variant === 'info') return 'bg-blue-700 active:bg-blue-800 hover:bg-blue-600';
-	if (variant === 'error') return 'bg-red-700 active:bg-red-800 hover:bg-red-600';
-	return 'bg-zinc-950 active:bg-black hover:bg-zinc-900';
+	if (variant === 'secondary')
+		return 'bg-transparent border border-vault-border text-vault-text hover:bg-vault-surface-raised hover:border-vault-accent/50';
+	if (variant === 'danger')
+		return 'bg-transparent border border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700';
+	if (variant === 'ghost')
+		return 'bg-transparent text-vault-muted hover:text-vault-text hover:bg-vault-surface-raised';
+	return 'bg-vault-accent text-vault-ink hover:bg-vault-accent/90 active:bg-vault-accent/80 font-semibold';
 }
 
 export default function Button({
@@ -20,6 +25,7 @@ export default function Button({
 	icon,
 	disabled = false,
 	variant = 'primary',
+	block = true,
 	onClick
 }: Props) {
 	return (
@@ -27,10 +33,10 @@ export default function Button({
 			type="submit"
 			disabled={disabled}
 			onClick={onClick}
-			className={`w-full ${disabled ? 'cursor-not-allowed bg-zinc-400' : getVariantClass(variant)} rounded-md py-1 text-lg font-bold shadow flex items-center gap-x-2 px-2 justify-center`}
+			className={`${block ? 'w-full' : ''} ${disabled ? 'cursor-not-allowed opacity-40' : getVariantClass(variant)} rounded-vault py-1.5 px-3 font-sans transition-colors duration-150 flex items-center gap-x-2 justify-center disabled:cursor-not-allowed disabled:bg-transparent disabled:opacity-40`}
 		>
 			{!!label && <span>{label}</span>}
-			{!!icon && <Icon icon={icon} style={{ fontSize: 24 }} />}
+			{!!icon && <Icon icon={icon} style={{ fontSize: 20 }} />}
 		</button>
 	);
 }

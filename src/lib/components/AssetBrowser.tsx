@@ -117,34 +117,39 @@ export default function AssetBrowser({
 					ref={fileInputRef}
 				/>
 				<div className="w-full flex items-end justify-between pb-2">
-					<div className="flex items-center gap-x-2 text-xl">
+					<div className="flex items-center gap-x-2 font-mono text-sm text-vault-muted">
 						{folderPath && (
-							<div>
-								<Button label="Back" variant="info" icon="ph:caret-left" onClick={goBack} />
-							</div>
+							<Button
+								label="Back"
+								variant="ghost"
+								block={false}
+								icon="ph:caret-left"
+								onClick={goBack}
+							/>
 						)}
 						<span>Total: {totalCount}</span>
 					</div>
 					<div className="flex items-end gap-x-2">
-						<div>
-							<Input
-								autoFocus={!!initialTitleFilter}
-								title="Search"
-								value={search}
-								onChange={debounce}
-							/>
-						</div>
-						<div className="h-8">
-							<Button
-								icon="ph:folder-plus"
-								label="Create folder"
-								variant="info"
-								onClick={createFolder}
-							/>
-						</div>
-						<div className="h-8">
-							<Button icon="ph:upload" label="Upload" variant="info" onClick={beginUpload} />
-						</div>
+						<Input
+							autoFocus={!!initialTitleFilter}
+							title="Search"
+							value={search}
+							onChange={debounce}
+						/>
+						<Button
+							icon="ph:folder-plus"
+							label="Create folder"
+							variant="secondary"
+							block={false}
+							onClick={createFolder}
+						/>
+						<Button
+							icon="ph:upload"
+							label="Upload"
+							variant="secondary"
+							block={false}
+							onClick={beginUpload}
+						/>
 					</div>
 				</div>
 				<PreviewTable data={items} type={type} sort={initialSort} basePath={pagePath(pageNumber)} />
@@ -154,7 +159,7 @@ export default function AssetBrowser({
 					<select
 						onChange={selectPage}
 						value={pageNumber}
-						className=" bg-zinc-800 rounded-md text-lg px-4"
+						className="bg-vault-surface border border-vault-border text-vault-text rounded-vault text-sm font-mono px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-vault-accent"
 					>
 						{Array.from(Array(totalPages).keys()).map((page) => (
 							<option key={page} value={page + 1}>
@@ -165,7 +170,7 @@ export default function AssetBrowser({
 					<select
 						onChange={selectCount}
 						value={initialCount}
-						className=" bg-zinc-800 rounded-md text-lg px-4"
+						className="bg-vault-surface border border-vault-border text-vault-text rounded-vault text-sm font-mono px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-vault-accent"
 					>
 						{PAGE_SIZES.map((count) => (
 							<option key={count} value={count}>
@@ -175,20 +180,22 @@ export default function AssetBrowser({
 					</select>
 				</div>
 				<div className="w-full flex items-center justify-end gap-x-1 py-2">
-					<div className="w-8 h-8">
-						<a href={pageNumber <= 1 ? '#' : pagePath(pageNumber - 1)}>
-							<Button variant="info" icon="ph:caret-left" disabled={pageNumber === 1} />
-						</a>
-					</div>
-					<div className="w-8 h-8">
-						<a href={pagePath(pageNumber + 1)}>
-							<Button
-								variant="info"
-								icon="ph:caret-right"
-								disabled={items.length === 0 || pageNumber >= totalPages}
-							/>
-						</a>
-					</div>
+					<a href={pageNumber <= 1 ? '#' : pagePath(pageNumber - 1)}>
+						<Button
+							variant="ghost"
+							block={false}
+							icon="ph:caret-left"
+							disabled={pageNumber === 1}
+						/>
+					</a>
+					<a href={pagePath(pageNumber + 1)}>
+						<Button
+							variant="ghost"
+							block={false}
+							icon="ph:caret-right"
+							disabled={items.length === 0 || pageNumber >= totalPages}
+						/>
+					</a>
 				</div>
 			</div>
 		</div>

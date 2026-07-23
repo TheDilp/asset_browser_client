@@ -1,27 +1,65 @@
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/inter';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-	@apply bg-zinc-950 overflow-hidden;
+@layer base {
+	html {
+		font-family: theme('fontFamily.sans');
+	}
+
+	body {
+		@apply bg-vault-ink text-vault-text overflow-hidden;
+	}
+
+	:focus-visible {
+		@apply outline-none ring-2 ring-vault-accent ring-offset-2 ring-offset-vault-ink;
+	}
+}
+
+@layer utilities {
+	.vault-range {
+		@apply appearance-none h-1 rounded-full bg-vault-border;
+	}
+	.vault-range::-webkit-slider-thumb {
+		@apply appearance-none w-3 h-3 rounded-full bg-vault-accent cursor-pointer;
+	}
+	.vault-range::-moz-range-thumb {
+		@apply w-3 h-3 rounded-full bg-vault-accent border-0 cursor-pointer;
+	}
 }
 
 ::-webkit-scrollbar {
-	width: 6px; /* width for vertical scrollbars */
-	height: 6px; /* height for horizontal scrollbars */
+	width: 6px;
+	height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: darkgray;
+	background-color: theme('colors.vault.border');
 	border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track {
-	background-color: lightgray;
+	background-color: theme('colors.vault.ink');
 }
 
 /* For Firefox */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: darkgray lightgray;
+	scrollbar-color: theme('colors.vault.border') theme('colors.vault.ink');
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
 }

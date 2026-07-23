@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import VaultSeal from '$lib/components/VaultSeal';
 import { actions } from 'astro:actions';
 
 if (Astro.locals.user?.id) {
@@ -16,7 +17,8 @@ const notVerified = result?.data?.notVerified;
 const invalidCredentials = result?.data?.invalidCredentials;
 
 const inputClass =
-	'px-2 rounded h-8 w-full bg-zinc-800 text-white focus:outline-0 focus:ring-2 focus:border-0 ring-offset-0';
+	'px-3 rounded-vault h-9 w-full bg-vault-surface-raised border border-vault-border text-vault-text placeholder:text-vault-muted/60 focus:outline-none focus:ring-2 focus:ring-vault-accent focus:border-vault-accent transition-colors duration-150';
+const labelClass = 'text-xs font-mono uppercase tracking-wide text-vault-muted';
 ---
 
 <BaseLayout title="Login">
@@ -24,23 +26,28 @@ const inputClass =
 		<form
 			method="POST"
 			action={actions.login}
-			class="w-full h-full lg:w-64 lg:h-64 xl:w-96 xl:h-64 rounded shadow bg-zinc-900 flex flex-col gap-y-2 p-4"
+			class="relative overflow-hidden w-full h-full lg:w-96 xl:w-[26rem] lg:h-auto rounded-vault shadow-vault bg-vault-surface border border-vault-border flex flex-col gap-y-3 p-6"
 		>
-			<h2 class="text-center text-2xl font-medium">Welcome back</h2>
-			{notVerified && <p class="text-red-400 text-sm">Account not verified.</p>}
-			{invalidCredentials && <p class="text-red-400 text-sm">Invalid username or password.</p>}
-			<label class="h-14">
-				<span class="text-xs">Username</span>
+			<VaultSeal className="absolute -right-8 -bottom-8 w-48 h-48 text-vault-accent opacity-[0.06] pointer-events-none" />
+			<h2 class="relative text-center text-2xl font-display text-vault-text">Welcome back</h2>
+			{notVerified && <p class="relative text-red-400 text-sm">Account not verified.</p>}
+			{
+				invalidCredentials && (
+					<p class="relative text-red-400 text-sm">Invalid username or password.</p>
+				)
+			}
+			<label class="relative h-16 flex flex-col gap-y-1">
+				<span class={labelClass}>Username</span>
 				<input name="username" required class={inputClass} />
 			</label>
-			<label class="h-14">
-				<span class="text-xs">Password</span>
+			<label class="relative h-16 flex flex-col gap-y-1">
+				<span class={labelClass}>Password</span>
 				<input name="password" type="password" required class={inputClass} />
 			</label>
-			<div class="mt-auto">
+			<div class="relative mt-auto">
 				<button
 					type="submit"
-					class="w-full bg-blue-700 active:bg-blue-800 hover:bg-blue-600 rounded-md py-1 text-lg font-bold shadow flex items-center gap-x-2 px-2 justify-center"
+					class="w-full bg-vault-accent text-vault-ink hover:bg-vault-accent/90 active:bg-vault-accent/80 font-semibold rounded-vault py-1.5 px-3 transition-colors duration-150 flex items-center gap-x-2 justify-center"
 				>
 					Login
 				</button>

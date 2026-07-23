@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import AudioPlayer from './AudioPlayer';
 import Button from './form/Button';
+import VaultSeal from './VaultSeal';
 
 export interface PreviewTableItem {
 	id: string;
@@ -21,8 +22,16 @@ interface Props {
 	basePath?: string;
 }
 
+function formatDate(createdAt: string) {
+	return createdAt ? new Date(createdAt).toLocaleDateString() : '';
+}
+
+function formatSize(size: number) {
+	return `${(size / 1000000).toFixed(2)} MB`;
+}
+
 export default function PreviewTable({ data, type, sort: initialSort, basePath = '' }: Props) {
-	const [preview, setPreview] = useState<string | undefined>(undefined);
+	const [preview, setPreview] = useState<PreviewTableItem | undefined>(undefined);
 	const [sort, setSort] = useState<string | null>(initialSort ?? null);
 
 	function copyUrl(url: string) {
@@ -56,105 +65,236 @@ export default function PreviewTable({ data, type, sort: initialSort, basePath =
 		}
 	}
 
+	function ImageGrid({ items }: { items: PreviewTableItem[] }) {
+		return (
+			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+				{items.map((item) =>
+					item.size === 0 ? (
+						<a
+							key={item.id}
+							href={`${basePath}/${item.title}`}
+							className="flex flex-col items-center justify-center gap-y-2 aspect-square rounded-vault border border-vault-border bg-vault-surface hover:bg-vault-surface-raised hover:border-vault-accent/40 transition-all duration-150 p-4"
+						>
+							<Icon icon="ph:folder" className="text-3xl text-vault-muted" />
+							<span className="text-sm text-center text-vault-text truncate w-full">
+								{item.title}
+							</span>
+						</a>
+					) : (
+						<div
+							key={item.id}
+							className="group flex flex-col rounded-vault border border-vault-border bg-vault-surface hover:border-vault-accent/50 shadow-vault hover:shadow-vault-hover transition-all duration-150 overflow-hidden"
+						>
+							<button
+								type="button"
+								onClick={() => setPreview(item)}
+								className="aspect-square w-full overflow-hidden bg-vault-ink"
+							>
+								<img
+									loading="lazy"
+									src={item.url}
+									alt={item.title}
+									className="w-full h-full object-cover"
+								/>
+							</button>
+							<div className="p-2 flex flex-col gap-y-1">
+								<span className="text-sm text-vault-text truncate">{item.title}</span>
+								<div className="flex items-center justify-between font-mono text-[11px] text-vault-muted">
+									<span>{formatSize(item.size)}</span>
+									<span>{formatDate(item.createdAt)}</span>
+								</div>
+								<div className="flex items-center gap-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+									<Button
+										icon="ph:copy"
+										variant="ghost"
+										block={false}
+										onClick={() => copyUrl(item.url)}
+									/>
+									<Button
+										icon="ph:trash"
+										variant="danger"
+										block={false}
+										onClick={() =>
+											deleteItem({ type: item.type ?? type, id: item.id, asset_url: item.url })
+										}
+									/>
+								</div>
+							</div>
+						</div>
+					)
+				)}
+			</div>
+		);
+	}
+
+	function MusicList({ items }: { items: PreviewTableItem[] }) {
+		return (
+			<div className="flex flex-col gap-y-1">
+				{items.map((item) =>
+					item.size === 0 ? (
+						<a
+							key={item.id}
+							href={`${basePath}/${item.title}`}
+							className="flex items-center gap-x-3 px-4 py-2 rounded-vault border border-vault-border bg-vault-surface hover:bg-vault-surface-raised hover:border-vault-accent/40 transition-colors duration-150"
+						>
+							<Icon icon="ph:folder" className="text-lg text-vault-muted" />
+							<span className="text-sm text-vault-text truncate">{item.title}</span>
+						</a>
+					) : (
+						<div
+							key={item.id}
+							className="flex items-center gap-x-4 px-4 py-2 rounded-vault border border-vault-border bg-vault-surface hover:bg-vault-surface-raised hover:border-vault-accent/30 transition-colors duration-150"
+						>
+							<span className="flex-1 text-sm text-vault-text truncate">{item.title}</span>
+							<span className="font-mono text-xs text-vault-muted w-24 text-right shrink-0">
+								{formatDate(item.createdAt)}
+							</span>
+							<div className="w-64 shrink-0">
+								<AudioPlayer id={item.id} url={item.url} />
+							</div>
+							<span className="font-mono text-xs text-vault-muted w-20 text-right shrink-0">
+								{formatSize(item.size)}
+							</span>
+							<div className="flex gap-x-1 shrink-0">
+								<Button
+									icon="ph:copy"
+									variant="ghost"
+									block={false}
+									onClick={() => copyUrl(item.url)}
+								/>
+								<Button
+									icon="ph:trash"
+									variant="danger"
+									block={false}
+									onClick={() =>
+										deleteItem({ type: item.type ?? type, id: item.id, asset_url: item.url })
+									}
+								/>
+							</div>
+						</div>
+					)
+				)}
+			</div>
+		);
+	}
+
+	function SortChips() {
+		return (
+			<div className="flex gap-x-2 mb-2">
+				<Button
+					label={`Title ${sort?.includes('title') ? (sort.startsWith('-') ? '↓' : '↑') : ''}`}
+					variant="ghost"
+					block={false}
+					onClick={() => changeSort('title')}
+				/>
+				<Button
+					label={`Date ${sort?.includes('created') ? (sort.startsWith('-') ? '↓' : '↑') : ''}`}
+					variant="ghost"
+					block={false}
+					onClick={() => changeSort('created')}
+				/>
+			</div>
+		);
+	}
+
+	function EmptyState() {
+		return (
+			<div className="flex flex-col items-center justify-center gap-y-3 py-24 text-vault-muted">
+				<VaultSeal className="w-12 h-12 text-vault-accent opacity-40" />
+				<span className="font-mono text-sm">No assets yet</span>
+			</div>
+		);
+	}
+
+	// Only used for the mixed-type (no `type` prop) search-results case, which never contains
+	// folder markers — single-type callers pass `data` straight through instead.
+	const partitionedImages = data.filter((item) => item.type === 'images');
+	const partitionedMusic = data.filter((item) => item.type === 'music');
+
 	return (
 		<>
 			{!!preview && (
 				<div
-					onClick={(e) => {
-						e.preventDefault();
-						setPreview(undefined);
-					}}
-					className="w-screen h-screen top-0 left-0 absolute bg-black bg-opacity-75 flex items-center justify-center"
+					onClick={() => setPreview(undefined)}
+					className="fixed inset-0 z-50 bg-vault-ink/80 backdrop-blur-sm flex items-center justify-center motion-safe:animate-fadeIn"
 				>
-					<div className="absolute top-4 right-4 text-2xl">
-						<Button icon="ph:x" />
-					</div>
-					<img src={preview} alt="preview" />
-				</div>
-			)}
-			<div className="text-xs flex items-center uppercase bg-zinc-900 text-zinc-400 gap-x-8 px-4">
-				<div
-					className={`flex-1 py-3 cursor-pointer ${sort?.includes('title') ? 'text-blue-300' : ''}`}
-					onClick={() => changeSort('title')}
-				>
-					Title
-				</div>
-				<div
-					className={`w-20 py-3 cursor-pointer ${sort?.includes('created') ? 'text-blue-300' : ''}`}
-					onClick={() => changeSort('created')}
-				>
-					Created at
-				</div>
-				<div className="py-3 w-80 text-right">Preview</div>
-				<div className="py-3 w-24 text-right">Size</div>
-				<div className="py-3 w-24 text-right">Actions</div>
-			</div>
-			<div className="flex flex-col max-h-[90%] overflow-y-auto">
-				{data.map((item) => (
 					<div
-						key={item.id}
-						className="border-b bg-zinc-800 border-zinc-700 flex flex-row flex-nowrap px-4 min-h-14 max-h-14 h-14 gap-x-8"
+						onClick={(e) => e.stopPropagation()}
+						className="relative max-w-4xl max-h-[85vh] flex flex-col motion-safe:animate-scaleIn"
 					>
-						<div className="flex-1 font-medium whitespace-nowrap text-white text-xl items-center flex">
-							{item.size === 0 ? (
-								<a className="flex items-center gap-x-2" href={`${basePath}/${item.title}`}>
-									<Icon icon="ph:folder" />
-									{item.title}
-								</a>
-							) : (
-								item.title
-							)}
-						</div>
-						<div className="w-20 font-medium whitespace-nowrap text-white text-xl items-center flex">
-							{item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}
-						</div>
-						<div className="flex items-center w-80 justify-end">
-							{(type === 'images' || item.type === 'images') && item.size !== 0 && (
-								<img
-									loading="lazy"
-									onClick={() => setPreview(item.url)}
-									src={item.url}
-									alt={item.title}
-									className="w-10 h-10 cursor-pointer"
-									onKeyDown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') setPreview(item.url);
-									}}
+						<button
+							type="button"
+							onClick={() => setPreview(undefined)}
+							className="absolute -top-10 right-0 text-vault-muted hover:text-vault-text"
+						>
+							<Icon icon="ph:x" style={{ fontSize: 24 }} />
+						</button>
+						<img
+							src={preview.url}
+							alt={preview.title}
+							className="max-h-[70vh] rounded-vault border border-vault-border object-contain"
+						/>
+						<div className="mt-2 flex items-center justify-between px-3 py-2 bg-vault-surface border border-vault-border rounded-vault font-mono text-xs text-vault-muted">
+							<span className="truncate">
+								{preview.title} · {formatSize(preview.size)} · {formatDate(preview.createdAt)}
+							</span>
+							<div className="flex gap-x-2">
+								<Button
+									icon="ph:copy"
+									variant="ghost"
+									block={false}
+									onClick={() => copyUrl(preview.url)}
 								/>
-							)}
-							{(type === 'music' || item.type === 'music') && (
-								<AudioPlayer id={item.id} url={item.url} />
-							)}
-						</div>
-						{item.size === 0 ? (
-							<div className="w-24" />
-						) : (
-							<div className="flex items-center justify-end w-24">
-								{(item.size / 1000000).toFixed(2)} MB
-							</div>
-						)}
-						<div className=" flex items-center gap-x-2 w-24 justify-end">
-							{item.size !== 0 && (
-								<div className="w-8 h-8">
-									<Button icon="ph:copy" onClick={() => copyUrl(item.url)} />
-								</div>
-							)}
-							<div className="w-8 h-8">
 								<Button
 									icon="ph:trash"
-									variant="error"
+									variant="danger"
+									block={false}
 									onClick={() =>
 										deleteItem({
-											type: item.type ?? type,
-											id: item.id,
-											asset_url: item.url
+											type: preview.type ?? type,
+											id: preview.id,
+											asset_url: preview.url
 										})
 									}
 								/>
 							</div>
 						</div>
 					</div>
-				))}
-			</div>
+				</div>
+			)}
+
+			{data.length === 0 && <EmptyState />}
+
+			{type === 'images' && data.length > 0 && (
+				<>
+					<SortChips />
+					<ImageGrid items={data} />
+				</>
+			)}
+
+			{type === 'music' && data.length > 0 && (
+				<>
+					<SortChips />
+					<MusicList items={data} />
+				</>
+			)}
+
+			{!type && data.length > 0 && (
+				<div className="flex flex-col gap-y-8">
+					{partitionedImages.length > 0 && (
+						<div>
+							<h2 className="font-mono uppercase text-xs text-vault-muted mb-2">Images</h2>
+							<ImageGrid items={partitionedImages} />
+						</div>
+					)}
+					{partitionedMusic.length > 0 && (
+						<div>
+							<h2 className="font-mono uppercase text-xs text-vault-muted mb-2">Music</h2>
+							<MusicList items={partitionedMusic} />
+						</div>
+					)}
+				</div>
+			)}
 		</>
 	);
 }

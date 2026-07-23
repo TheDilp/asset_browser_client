@@ -12,20 +12,18 @@ const data = await db.collection('games').getFirstListItem<GameType>(`url = "${g
 ---
 
 <GameLayout title="API">
-	<div class="flex items-center p-4 justify-between bg-zinc-900">
-		<p>
+	<div class="flex items-center p-6 justify-between bg-vault-surface border border-vault-border rounded-vault gap-x-6">
+		<p class="text-vault-muted">
 			Click the button to copy the API key for your game to the clipboard. Afterwards, you can use
 			CTRL/CMD+V to paste it in the designated extension or application.
 		</p>
-		<div>
-			<button
-				id="copy-api-key"
-				data-api-key={data.api_key}
-				class="w-full bg-blue-700 active:bg-blue-800 hover:bg-blue-600 rounded-md py-1 text-lg font-bold shadow flex items-center gap-x-2 px-2 justify-center"
-			>
-				<span>Copy API Key</span>
-			</button>
-		</div>
+		<button
+			id="copy-api-key"
+			data-api-key={data.api_key}
+			class="shrink-0 bg-vault-accent text-vault-ink hover:bg-vault-accent/90 active:bg-vault-accent/80 font-semibold rounded-vault py-1.5 px-3 transition-colors duration-150 flex items-center gap-x-2 justify-center"
+		>
+			<span>Copy API Key</span>
+		</button>
 	</div>
 </GameLayout>
 
