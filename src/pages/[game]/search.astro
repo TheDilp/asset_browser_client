@@ -1,0 +1,79 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import PreviewTable from '$lib/components/PreviewTable';
+import { db } from '$lib/server/util/db';
+import { preview } from '$lib/server/util/previewUtils';
+import type { AssetType } from '$lib/types/types';
+
+if (!Astro.locals.user?.id) {
+	return Astro.redirect('/login');
+}
+
+const { game } = Astro.params;
+const searchParam = Astro.url.searchParams.get('filter');
+
+function formatItem(item: AssetType, type: 'images' | 'music') {
+	return {
+		id: item.id,
+		createdAt: item.created,
+		title: item.title,
+		url: preview(item.url),
+		size: item.size,
+		type
+	};
+}
+
+let images: ReturnType<typeof formatItem>[] = [];
+let music: ReturnType<typeof formatItem>[] = [];
+
+if (searchParam && searchParam.length >= 3) {
+	const filter = `((game_id.url = '${game}' && owner_id = '${Astro.locals.user.id}') || owner_id = null) && title ?~ '${searchParam}'`;
+
+	const imageData = await db.collection('images').getList<AssetType>(1, 100, {
+		expand: 'game_id',
+		sort: 'title',
+		filter,
+		requestKey: ''
+	});
+
+	const musicData = await db.collection('music').getList<AssetType>(1, 100, {
+		expand: 'game_id',
+		sort: 'title',
+		filter,
+		requestKey: ''
+	});
+
+	images = imageData.items.map((item) => formatItem(item, 'images'));
+	music = musicData.items.map((item) => formatItem(item, 'music'));
+}
+---
+
+<GameLayout title="Search">
+	<div class="py-4 flex flex-col gap-y-2 h-screen">
+		<div class="w-full items-center gap-x-4">
+			<input
+				id="search-input"
+				autofocus
+				placeholder="Search (type at least 3 characters)"
+				value={searchParam ?? ''}
+				class="px-2 rounded h-8 w-full bg-zinc-800 text-white focus:outline-0 focus:ring-2 focus:border-0 ring-offset-0"
+			/>
+		</div>
+
+		<PreviewTable client:load data={[...images, ...music]} />
+	</div>
+</GameLayout>
+
+<script>
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	const input = document.getElementById('search-input') as HTMLInputElement | null;
+	input?.addEventListener('input', (e) => {
+		const value = (e.currentTarget as HTMLInputElement).value;
+		clearTimeout(timer);
+		timer = setTimeout(() => {
+			const query = new URLSearchParams(window.location.search);
+			query.set('filter', value);
+			window.location.search = query.toString();
+		}, 550);
+	});
+</script>

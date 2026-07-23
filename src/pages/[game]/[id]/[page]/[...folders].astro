@@ -1,0 +1,44 @@
+---
+import GameLayout from '../../../../layouts/GameLayout.astro';
+import AssetBrowser from '$lib/components/AssetBrowser';
+import { loadAssetPage } from '$lib/server/util/assetQuery';
+
+if (!Astro.locals.user?.id) {
+	return Astro.redirect('/login');
+}
+
+const { game, id, page, folders } = Astro.params;
+const type = id as 'images' | 'music';
+const pageNumber = Number(page || 1);
+const itemsPerPageRaw = Number(Astro.url.searchParams.get('count') || 10);
+const itemsPerPage = isNaN(itemsPerPageRaw) ? 10 : itemsPerPageRaw;
+const titleFilter = Astro.url.searchParams.get('title');
+const sort = Astro.url.searchParams.get('sort');
+
+const { data, count, pages } = await loadAssetPage({
+	game: game!,
+	type,
+	page: pageNumber,
+	folderPath: folders,
+	ownerId: Astro.locals.user.id,
+	titleFilter,
+	sort,
+	itemsPerPage
+});
+---
+
+<GameLayout title={type === 'images' ? 'Images' : 'Music'}>
+	<AssetBrowser
+		client:load
+		game={game!}
+		type={type}
+		pageNumber={pageNumber}
+		folderPath={folders}
+		items={data}
+		totalCount={count}
+		totalPages={pages}
+		initialCount={itemsPerPage}
+		initialSort={sort}
+		initialTitleFilter={titleFilter}
+	/>
+</GameLayout>

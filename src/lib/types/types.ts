@@ -6,7 +6,10 @@ export interface AssetType {
 	created: string;
 }
 
-export type AvailableGamesType = 'tales-from-commora-from-rags' | 'chronicles-of-salaraan-tom' | 'chronicles-of-salaraan-frontier';
+export type AvailableGamesType =
+	| 'tales-from-commora-from-rags'
+	| 'chronicles-of-salaraan-tom'
+	| 'chronicles-of-salaraan-frontier';
 export interface GameType {
 	id: string;
 	title: string;

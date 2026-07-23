@@ -1,0 +1,85 @@
+---
+import GameLayout from '../../../layouts/GameLayout.astro';
+import PreviewTable from '$lib/components/PreviewTable';
+import { s3Client } from '$lib/server/util/s3';
+import { preview } from '$lib/server/util/previewUtils';
+import { ListObjectsV2Command } from '@aws-sdk/client-s3';
+
+if (!Astro.locals.user?.id) {
+	return Astro.redirect('/login');
+}
+
+const { game, folder: folderParam } = Astro.params;
+const folder = (folderParam || '').split('/').filter(Boolean);
+
+const command = new ListObjectsV2Command({
+	Bucket: import.meta.env.DO_SPACES_NAME,
+	Prefix: `dnd/common/music/${folder.join('/')}${folder.length ? '/' : ''}`,
+	Delimiter: '/'
+});
+const res = await s3Client.send(command);
+
+const data = (res.Contents || [])
+	.map((item) => ({
+		id: item.Key || '',
+		title: item.Key?.split('/')?.at(-1) || '',
+		createdAt: '',
+		url: preview(item.Key || ''),
+		size: item.Size || 0,
+		type: 'music' as const
+	}))
+	.filter(
+		(item) =>
+			item.id?.endsWith('.mp3') ||
+			item.id?.endsWith('.ogg') ||
+			item.id?.endsWith('.flac') ||
+			item.id?.endsWith('.wav')
+	)
+	.sort((a, b) => {
+		if (a.id > b.id) return 1;
+		if (a.id < b.id) return -1;
+		return 0;
+	});
+
+const folders = (res.CommonPrefixes || [])
+	.map((prefix) => prefix.Prefix)
+	.filter((p): p is string => Boolean(p))
+	.sort((a, b) => {
+		if (a > b) return 1;
+		if (a < b) return -1;
+		return 0;
+	});
+
+const count = res.Contents?.length || 0;
+---
+
+<GameLayout title="Common">
+	<div class="py-2 h-[95vh] max-h-[95vh] overflow-hidden">
+		{
+			folders.length > 0 && (
+				<div id="folder-grid" class="w-full flex flex-col gap-y-1 overflow-y-auto max-h-[98%] p-4">
+					{folders.map((f) => (
+						<a
+							href={`/${game}/common/${f.replace('dnd/common/music/', '')}`}
+							class="w-full bg-zinc-800 max-h-20 shadow px-2 py-1 rounded-md text-sm hover:bg-zinc-700 hover:text-blue-300"
+						>
+							<h2 class="text-wrap text-bold text-lg">
+								{f.split('/').at(-2)?.replaceAll('_', ' ')}
+							</h2>
+						</a>
+					))}
+				</div>
+			)
+		}
+		{
+			data.length > 0 && (
+				<div class="w-full text-sm text-left flex flex-col overflow-hidden max-h-[calc(90vh)]">
+					<div class="w-full flex items-end justify-between pb-2">
+						<div class="text-xl">Total: {count}</div>
+					</div>
+					<PreviewTable client:load data={data} type="music" />
+				</div>
+			)
+		}
+	</div>
+</GameLayout>

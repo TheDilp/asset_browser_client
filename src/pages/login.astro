@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { actions } from 'astro:actions';
+
+if (Astro.locals.user?.id) {
+	return Astro.redirect('/games');
+}
+
+const result = Astro.getActionResult(actions.login);
+
+if (result?.data?.success) {
+	return Astro.redirect('/games');
+}
+
+const notVerified = result?.data?.notVerified;
+const invalidCredentials = result?.data?.invalidCredentials;
+
+const inputClass =
+	'px-2 rounded h-8 w-full bg-zinc-800 text-white focus:outline-0 focus:ring-2 focus:border-0 ring-offset-0';
+---
+
+<BaseLayout title="Login">
+	<div class="flex h-full items-center justify-center">
+		<form
+			method="POST"
+			action={actions.login}
+			class="w-full h-full lg:w-64 lg:h-64 xl:w-96 xl:h-64 rounded shadow bg-zinc-900 flex flex-col gap-y-2 p-4"
+		>
+			<h2 class="text-center text-2xl font-medium">Welcome back</h2>
+			{notVerified && <p class="text-red-400 text-sm">Account not verified.</p>}
+			{invalidCredentials && <p class="text-red-400 text-sm">Invalid username or password.</p>}
+			<label class="h-14">
+				<span class="text-xs">Username</span>
+				<input name="username" required class={inputClass} />
+			</label>
+			<label class="h-14">
+				<span class="text-xs">Password</span>
+				<input name="password" type="password" required class={inputClass} />
+			</label>
+			<div class="mt-auto">
+				<button
+					type="submit"
+					class="w-full bg-blue-700 active:bg-blue-800 hover:bg-blue-600 rounded-md py-1 text-lg font-bold shadow flex items-center gap-x-2 px-2 justify-center"
+				>
+					Login
+				</button>
+			</div>
+		</form>
+	</div>
+</BaseLayout>

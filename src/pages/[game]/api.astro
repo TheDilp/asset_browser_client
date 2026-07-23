@@ -1,0 +1,38 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { db } from '$lib/server/util/db';
+import type { GameType } from '$lib/types/types';
+
+if (!Astro.locals.user?.id) {
+	return Astro.redirect('/login');
+}
+
+const { game } = Astro.params;
+const data = await db.collection('games').getFirstListItem<GameType>(`url = "${game}"`);
+---
+
+<GameLayout title="API">
+	<div class="flex items-center p-4 justify-between bg-zinc-900">
+		<p>
+			Click the button to copy the API key for your game to the clipboard. Afterwards, you can use
+			CTRL/CMD+V to paste it in the designated extension or application.
+		</p>
+		<div>
+			<button
+				id="copy-api-key"
+				data-api-key={data.api_key}
+				class="w-full bg-blue-700 active:bg-blue-800 hover:bg-blue-600 rounded-md py-1 text-lg font-bold shadow flex items-center gap-x-2 px-2 justify-center"
+			>
+				<span>Copy API Key</span>
+			</button>
+		</div>
+	</div>
+</GameLayout>
+
+<script>
+	const button = document.getElementById('copy-api-key');
+	button?.addEventListener('click', () => {
+		const key = button.dataset.apiKey;
+		if (key) navigator.clipboard.writeText(key);
+	});
+</script>

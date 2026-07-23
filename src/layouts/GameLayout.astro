@@ -1,0 +1,62 @@
+---
+import { Icon } from '@iconify/react';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+	title?: string;
+}
+
+const { title } = Astro.props;
+const { game, id } = Astro.params;
+const pathname = Astro.url.pathname;
+
+const iconStyle = { fontSize: 24 };
+---
+
+<BaseLayout title={title}>
+	<ul class="flex gap-x-2 flex-nowrap flex-row border-b border-zinc-700 text-lg">
+		<li
+			class={`border-b top-[1px] flex items-end relative cursor-pointer ${id === 'images' ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
+		>
+			<a href={`/${game}/images/1`} class="flex items-end text-lg gap-x-2 max-h-12"
+				>Images <Icon icon="ph:image" style={iconStyle} /></a
+			>
+		</li>
+		<li
+			class={`border-b top-[1px] relative cursor-pointer flex items-end ${id === 'music' ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
+		>
+			<a href={`/${game}/music/1`} class="flex items-end text-lg gap-x-2 max-h-12"
+				><span>Music</span> <Icon icon="ph:music-notes" style={iconStyle} /></a
+			>
+		</li>
+		<li
+			class={`border-b top-[1px] relative cursor-pointer flex items-end ${pathname?.includes('common') ? 'font-medium border-blue-500' : 'border-zinc-700'} `}
+		>
+			<a href={`/${game}/common`} class="flex items-end text-lg gap-x-2 max-h-12"
+				><span>Common</span> <Icon icon="ph:folder-open" style={iconStyle} /></a
+			>
+		</li>
+		<li
+			class={`border-b top-[1px] relative cursor-pointer flex items-end ${pathname?.endsWith('search') ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
+		>
+			<a href={`/${game}/search`} class="flex items-end text-lg gap-x-2 max-h-12"
+				><span>Search</span> <Icon icon="ph:magnifying-glass" style={iconStyle} /></a
+			>
+		</li>
+		<li
+			class={`border-b top-[1px] relative cursor-pointer flex items-end ${pathname?.endsWith('api') ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
+		>
+			<a href={`/${game}/api`} class="flex items-end text-lg gap-x-2 max-h-12"
+				><span>API</span> <Icon icon="hugeicons:connect" style={iconStyle} /></a
+			>
+		</li>
+		<li
+			class={`border-b top-[1px] relative cursor-pointer flex items-end ml-auto ${pathname?.endsWith('search') ? 'font-medium border-blue-500' : 'border-zinc-700'}`}
+		>
+			<a href="/api/auth/logout" class="flex items-end text-lg gap-x-2 max-h-12"
+				><span>Sign out</span> <Icon icon="ph:sign-out" style={iconStyle} /></a
+			>
+		</li>
+	</ul>
+	<slot />
+</BaseLayout>
