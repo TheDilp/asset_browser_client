@@ -160,8 +160,14 @@ export default function PreviewTable({ data, type, sort: initialSort, basePath =
 							<span className="font-mono text-xs text-vault-muted w-20 text-right shrink-0">
 								{formatSize(item.size)}
 							</span>
-							<div className="flex justify-between w-16 shrink-0">
-								{deletable ? (
+							<div className="flex items-center gap-x-6 shrink-0">
+								<Button
+									icon="ph:copy"
+									variant="ghost"
+									block={false}
+									onClick={() => copyUrl(item.url)}
+								/>
+								{deletable && (
 									<Button
 										icon="ph:trash"
 										variant="danger"
@@ -170,15 +176,7 @@ export default function PreviewTable({ data, type, sort: initialSort, basePath =
 											deleteItem({ type: item.type ?? type, id: item.id, asset_url: item.url })
 										}
 									/>
-								) : (
-									<span />
 								)}
-								<Button
-									icon="ph:copy"
-									variant="ghost"
-									block={false}
-									onClick={() => copyUrl(item.url)}
-								/>
 							</div>
 						</div>
 					)
