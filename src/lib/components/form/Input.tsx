@@ -20,7 +20,7 @@ export default function Input({
 	onChange
 }: Props) {
 	return (
-		<label className="h-16 flex flex-col gap-y-1" title={title}>
+		<label className="flex flex-col gap-y-1" title={title}>
 			<span className="text-xs font-mono uppercase tracking-wide text-vault-muted">{title}</span>
 			<input
 				placeholder={placeholder}

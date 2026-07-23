@@ -33,6 +33,7 @@ function formatSize(size: number) {
 export default function PreviewTable({ data, type, sort: initialSort, basePath = '' }: Props) {
 	const [preview, setPreview] = useState<PreviewTableItem | undefined>(undefined);
 	const [sort, setSort] = useState<string | null>(initialSort ?? null);
+	const deletable = !!type && type !== 'common';
 
 	function copyUrl(url: string) {
 		navigator.clipboard.writeText(url);
@@ -103,20 +104,24 @@ export default function PreviewTable({ data, type, sort: initialSort, basePath =
 									<span>{formatSize(item.size)}</span>
 									<span>{formatDate(item.createdAt)}</span>
 								</div>
-								<div className="flex items-center gap-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+								<div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+									{deletable ? (
+										<Button
+											icon="ph:trash"
+											variant="danger"
+											block={false}
+											onClick={() =>
+												deleteItem({ type: item.type ?? type, id: item.id, asset_url: item.url })
+											}
+										/>
+									) : (
+										<span />
+									)}
 									<Button
 										icon="ph:copy"
 										variant="ghost"
 										block={false}
 										onClick={() => copyUrl(item.url)}
-									/>
-									<Button
-										icon="ph:trash"
-										variant="danger"
-										block={false}
-										onClick={() =>
-											deleteItem({ type: item.type ?? type, id: item.id, asset_url: item.url })
-										}
 									/>
 								</div>
 							</div>
@@ -155,20 +160,24 @@ export default function PreviewTable({ data, type, sort: initialSort, basePath =
 							<span className="font-mono text-xs text-vault-muted w-20 text-right shrink-0">
 								{formatSize(item.size)}
 							</span>
-							<div className="flex gap-x-1 shrink-0">
+							<div className="flex justify-between w-16 shrink-0">
+								{deletable ? (
+									<Button
+										icon="ph:trash"
+										variant="danger"
+										block={false}
+										onClick={() =>
+											deleteItem({ type: item.type ?? type, id: item.id, asset_url: item.url })
+										}
+									/>
+								) : (
+									<span />
+								)}
 								<Button
 									icon="ph:copy"
 									variant="ghost"
 									block={false}
 									onClick={() => copyUrl(item.url)}
-								/>
-								<Button
-									icon="ph:trash"
-									variant="danger"
-									block={false}
-									onClick={() =>
-										deleteItem({ type: item.type ?? type, id: item.id, asset_url: item.url })
-									}
 								/>
 							</div>
 						</div>
@@ -235,16 +244,7 @@ export default function PreviewTable({ data, type, sort: initialSort, basePath =
 							className="max-h-[70vh] rounded-vault border border-vault-border object-contain"
 						/>
 						<div className="mt-2 flex items-center justify-between px-3 py-2 bg-vault-surface border border-vault-border rounded-vault font-mono text-xs text-vault-muted">
-							<span className="truncate">
-								{preview.title} · {formatSize(preview.size)} · {formatDate(preview.createdAt)}
-							</span>
-							<div className="flex gap-x-2">
-								<Button
-									icon="ph:copy"
-									variant="ghost"
-									block={false}
-									onClick={() => copyUrl(preview.url)}
-								/>
+							{deletable ? (
 								<Button
 									icon="ph:trash"
 									variant="danger"
@@ -257,7 +257,18 @@ export default function PreviewTable({ data, type, sort: initialSort, basePath =
 										})
 									}
 								/>
-							</div>
+							) : (
+								<span />
+							)}
+							<span className="truncate px-2">
+								{preview.title} · {formatSize(preview.size)} · {formatDate(preview.createdAt)}
+							</span>
+							<Button
+								icon="ph:copy"
+								variant="ghost"
+								block={false}
+								onClick={() => copyUrl(preview.url)}
+							/>
 						</div>
 					</div>
 				</div>
@@ -272,7 +283,7 @@ export default function PreviewTable({ data, type, sort: initialSort, basePath =
 				</>
 			)}
 
-			{type === 'music' && data.length > 0 && (
+			{(type === 'music' || type === 'common') && data.length > 0 && (
 				<>
 					<SortChips />
 					<MusicList items={data} />

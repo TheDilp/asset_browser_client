@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import type { MouseEvent, PointerEvent as ReactPointerEvent } from 'react';
+import type { ChangeEvent, MouseEvent, PointerEvent as ReactPointerEvent } from 'react';
+import { Icon } from '@iconify/react';
 import Button from './form/Button';
 
 interface Props {
@@ -11,13 +12,13 @@ export default function AudioPlayer({ id = '', url = '' }: Props) {
 	const [time, setTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [paused, setPaused] = useState(true);
+	const [volume, setVolume] = useState(0.4);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
 	function playPause(e: MouseEvent<HTMLButtonElement>) {
 		const current = audioRef.current;
 		if (current) {
 			e.preventDefault();
-			current.volume = 0.25;
 			const audios = document.getElementsByTagName('audio');
 			for (let index = 0; index < audios.length; index++) {
 				audios[index].pause();
@@ -25,6 +26,12 @@ export default function AudioPlayer({ id = '', url = '' }: Props) {
 			if (paused) current.play();
 			else current.pause();
 		}
+	}
+
+	function changeVolume(e: ChangeEvent<HTMLInputElement>) {
+		const newVolume = Number(e.currentTarget.value);
+		setVolume(newVolume);
+		if (audioRef.current) audioRef.current.volume = newVolume;
 	}
 
 	function seek(clientX: number, target: HTMLInputElement) {
@@ -56,7 +63,7 @@ export default function AudioPlayer({ id = '', url = '' }: Props) {
 			<audio
 				ref={(el) => {
 					audioRef.current = el;
-					if (el) el.volume = 0.4;
+					if (el) el.volume = volume;
 				}}
 				id={id}
 				className="bg-vault-ink rounded-vault"
@@ -87,6 +94,16 @@ export default function AudioPlayer({ id = '', url = '' }: Props) {
 					onClick={playPause}
 					variant="ghost"
 					block={false}
+				/>
+				<Icon icon={volume === 0 ? 'ph:speaker-none' : 'ph:speaker-high'} className="text-vault-muted" />
+				<input
+					type="range"
+					className="w-20 vault-range"
+					min="0"
+					max="1"
+					step="0.01"
+					value={volume}
+					onChange={changeVolume}
 				/>
 			</div>
 		</>

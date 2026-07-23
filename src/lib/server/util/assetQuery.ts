@@ -48,7 +48,7 @@ export async function loadAssetPage({
 				|| (size = 0 && url ~ 'dnd/${game}/${folderPath}/%')
 				&& title != '${folderPath}' && game_id = '${gameId}'`;
 	} else {
-		sortExpr = sort || 'title';
+		sortExpr = `size,${sort || 'title'}`;
 		filter = `${ownerClause} ${titleClause} &&
 			((url !~ 'dnd/${game}/%/%.%' && size != 0) || (url !~ 'dnd/${game}/%/%' && size = 0)) && game_id = '${gameId}'`;
 	}

@@ -11,6 +11,9 @@ export const DELETE: APIRoute = async ({ request }) => {
 			type: 'images' | 'music';
 			asset_url: string;
 		};
+		if (payload.type !== 'images' && payload.type !== 'music') {
+			return new Response('Forbidden', { status: 403 });
+		}
 		const item = await db.collection(payload.type).getOne<AssetType>(payload.id);
 		const command = new DeleteObjectCommand({
 			Bucket: import.meta.env.DO_SPACES_NAME,
