@@ -38,7 +38,10 @@ export default function AssetBrowser({
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 	function pagePath(page: number, overrides?: Record<string, string>) {
-		const params = new URLSearchParams(window.location.search);
+		const params = new URLSearchParams();
+		if (initialCount) params.set('count', String(initialCount));
+		if (initialSort) params.set('sort', initialSort);
+		if (search) params.set('title', search);
 		for (const [key, value] of Object.entries(overrides ?? {})) {
 			params.set(key, value);
 		}
