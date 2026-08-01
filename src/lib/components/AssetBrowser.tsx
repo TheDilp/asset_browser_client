@@ -37,8 +37,13 @@ export default function AssetBrowser({
 	const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-	function pagePath(page: number) {
-		return `/${game}/${type}/${page}${folderPath ? `/${folderPath}` : ''}`;
+	function pagePath(page: number, overrides?: Record<string, string>) {
+		const params = new URLSearchParams(window.location.search);
+		for (const [key, value] of Object.entries(overrides ?? {})) {
+			params.set(key, value);
+		}
+		const query = params.toString();
+		return `/${game}/${type}/${page}${folderPath ? `/${folderPath}` : ''}${query ? `?${query}` : ''}`;
 	}
 
 	function buildUploadUrl() {
@@ -98,7 +103,7 @@ export default function AssetBrowser({
 
 	function selectCount(e: ChangeEvent<HTMLSelectElement>) {
 		const newCount = Number(e.currentTarget.value || 10);
-		window.location.href = `${pagePath(pageNumber)}?count=${newCount}`;
+		window.location.href = pagePath(pageNumber, { count: String(newCount) });
 	}
 
 	function goBack() {
@@ -107,7 +112,7 @@ export default function AssetBrowser({
 
 	return (
 		<div className="py-2">
-			<div className="w-full text-sm text-left flex flex-col overflow-hidden max-h-[calc(90vh)]">
+			<div className="w-full text-sm text-left flex flex-col overflow-y-auto overflow-x-hidden max-h-[calc(90vh)]">
 				<input
 					onChange={upload}
 					type="file"
