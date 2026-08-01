@@ -38,7 +38,7 @@ export async function loadAssetPage({
 	let filter: string;
 
 	if (folderPath) {
-		sortExpr = `size,${sort || 'title'}`;
+		sortExpr = sort || 'title';
 		filter = `${ownerClause} ${titleClause} &&
 				(
 					(url ~ 'dnd/${game}/${folderPath}/%.webp' || url ~ 'dnd/${game}/${folderPath}/%.png' || url ~ 'dnd/${game}/${folderPath}/%.jpg' || url ~ 'dnd/${game}/${folderPath}/%.jpeg')
@@ -67,6 +67,10 @@ export async function loadAssetPage({
 		size: item.size,
 		type: (type === 'common' ? 'music' : type) as 'images' | 'music'
 	}));
+
+	if (folderPath) {
+		formatted.sort((a, b) => (a.size === 0 ? 0 : 1) - (b.size === 0 ? 0 : 1));
+	}
 
 	return { data: formatted, count: data.totalItems, pages: data.totalPages };
 }
