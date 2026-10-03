@@ -2,7 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GameDashboard from '$lib/components/GameDashboard';
 import { db } from '$lib/server/util/db';
-import type { GameType, FoundryServiceEnvs } from '$lib/types/types';
+import type { GameType } from '$lib/types/types';
+import { getCurrentWorld } from '$lib/server/util/currentWorld';
 
 if (!Astro.locals.user?.id) {
 	return Astro.redirect('/login');
@@ -12,16 +13,10 @@ const games = await db
 	.collection('games')
 	.getFullList<GameType>({ filter: `owner_id = '${Astro.locals.user.id}' || owner_id = null` });
 
-const activeGameRes = await fetch(
-	`https://admin.salaraan.com/api/v1/services/${import.meta.env.FOUNDRY_SERVICE_ID}/envs`,
-	{
-		headers: {
-			Authorization: `Bearer ${import.meta.env.COOLIFY_TOKEN}`
-		}
-	}
-);
-const activeGameData = (await activeGameRes.json()) as FoundryServiceEnvs[];
-const currentWorld = activeGameData.find((e) => e.key === 'FOUNDRY_WORLD')?.value;
+const currentWorld = await getCurrentWorld({
+	serviceId: process.env.FOUNDRY_SERVICE_ID ?? import.meta.env.FOUNDRY_SERVICE_ID,
+	token: process.env.COOLIFY_TOKEN ?? import.meta.env.COOLIFY_TOKEN
+});
 ---
 
 <BaseLayout title="Games">
